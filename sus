@@ -1,0 +1,28 @@
+#!/bin/bash
+# -----------------------------------------------------------------------------
+# sus (Unix Exec.)
+# set or not set the software update server
+# Last Edited: 5/2/18
+# -----------------------------------------------------------------------------
+source /usr/local/massmgmt/lib/massmgmtlib.sh
+
+scriptEnabled="$(cat $configFile | awk '/SUS/ {print $2}')"
+catalogURL="$(cat $configFile | awk '/ServerAddress/ {print $2}')"
+# -----------------------------------------------------------------------------
+if [ "$scriptEnabled" == "Enable" ] ; then
+	# set to sus determined in config file
+	chkConfiguredSUS="$(sudo defaults read /Library/Preferences/com.apple.SoftwareUpdate.plist CatalogURL)"
+	if [ "$chkConfiguredSUS" == "$catalogURL" ] ; then
+		echo "$logStart Software Update Server already configured to $catalogURL" >> "$logFile"
+	else
+		echo "$logStart Setting Software Update Server to $catalogURL" >> "$logFile"
+		sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate.plist CatalogURL "$catalogURL" >> "$logFile" 2>&1
+	fi
+elif [ "$scriptEnabled" == "Disable" ] ; then
+	echo "$logStart Software Update Server configuration is disabled in the configuration file" >> "$logFile"
+	sudo defaults delete /Library/Preferences/com.apple.SoftwareUpdate.plist CatalogURL >> "$logFile" 2>&1
+else
+	echo "$logStart SUS configuration is invalid" >> "$logFile"
+fi
+exit
+# -----------------------------------------------------------------------------

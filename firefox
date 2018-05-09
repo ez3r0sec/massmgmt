@@ -1,0 +1,80 @@
+#!/bin/sh
+# ------------------------------------------------------------------------------
+# Script to download or update Firefox
+# https://www.jamf.com/jamf-nation/third-party-products/files/764/firefox-install-update
+# Last Modified: 4/25/18
+# ------------------------------------------------------------------------------
+source /usr/local/massmgmt/lib/massmgmtlib.sh
+
+dmgfile="FF.dmg"
+scriptEnabled="$(cat $configFile | awk '/UpdateFirefox/ {print $2}')"
+deleteIfInstalled="$(cat $configFile | awk '/Firefox-DeleteIfInstalled/ {print $2}')"
+# ------------------------------------------------------------------------------
+if [ "$scriptEnabled" == "Disable" ] ; then
+    if [ "$deleteIfInstalled" == "Yes" ] ; then
+	echo "$logStart Deleting Firefox" >> "$logFile"
+	sudo rm -rf /Applications/Firefox.app
+    elif [ "$deleteIfInstalled" == "No" ] ; then
+	echo "$logStart Firefox script is disabled but Firefox is allowed on this system" >> "$logFile"
+    else
+	echo "$logStart Invalid configuration for DeleteIfInstalled key in the chrome section of the configuration file" >> "$logFile"
+    fi
+    exit
+elif [ "$scriptEnabled" == "Enable" ] ; then
+  # Get OS version and adjust for use with the URL string
+    OSvers_URL=$( sw_vers -productVersion | sed 's/[.]/_/g' )
+  # Set the User Agent string for use with curl
+    userAgent="Mozilla/5.0 (Macintosh; Intel Mac OS X ${OSvers_URL}) AppleWebKit/535.6.2 (KHTML, like Gecko) Version/5.2 Safari/535.6.2"
+  # Get the latest version of Reader available from Firefox page.
+    latestver="$(/usr/bin/curl -s -A "$userAgent" https://www.mozilla.org/en-US/firefox/new/ | grep 'data-latest-firefox' | sed -e 's/.* data-latest-firefox="\(.*\)".*/\1/' -e 's/\"//' | /usr/bin/awk '{print $1}')"
+  # if the latestver curl fails, exit
+    if [ "$latestver" == "" ] ; then
+  	echo "$logStart latestver curl failed, exiting" >> "$logFile"
+  	exit
+    else
+  	echo "$logStart Latest Version is: $latestver" >> "$logFile"
+    fi
+  # Get the version number of the currently-installed FF, if any.
+    if [ -e "/Applications/Firefox.app" ] ; then
+        currentinstalledver="$(/usr/bin/defaults read /Applications/Firefox.app/Contents/Info CFBundleShortVersionString)"
+    	echo "Current installed version is: $currentinstalledver" >> "$logFile"
+    	if [ ${latestver} = ${currentinstalledver} ] ; then
+            echo "$logStart Firefox is current. Exiting" >> "$logFile"
+            exit
+    	fi
+    else
+        currentinstalledver="none"
+    	echo "$logStart Firefox is not installed, installing" >> "$logFile"
+    fi
+
+    url="https://download-installer.cdn.mozilla.net/pub/firefox/releases/${latestver}/mac/en-US/Firefox%20${latestver}.dmg"
+    echo "$logStart Latest version of the URL is: $url" >> "$logFile"
+
+  # Compare the two versions, if they are different or Firefox is not present then download and install the new version.
+    if [ "${currentinstalledver}" != "${latestver}" ] ; then
+        echo "$logStart Curling Firefox dmg"  >> "$logFile"
+    	curl -s -o /tmp/${dmgfile} ${url}
+    	hdiutil attach /tmp/${dmgfile} -nobrowse -quiet
+    	sudo ditto -rsrc "/Volumes/Firefox/Firefox.app" "/Applications/Firefox.app"
+    	sleep 10
+        hdiutil detach $(/bin/df | /usr/bin/grep Firefox | awk '{print $1}') -quiet
+    	sleep 10
+    	rm /tmp/${dmgfile}
+
+    # double check to see if the new version got updated
+    	newlyinstalledver="$(/usr/bin/defaults read /Applications/Firefox.app/Contents/Info CFBundleShortVersionString)"
+    	if [ "${latestver}" = "${newlyinstalledver}" ] ; then
+            echo "$logStart Firefox has been updated"  >> "$logFile"
+    	else
+            echo "$logStart Firefox update unsuccessful." >> "$logFile"
+            exit
+    	fi
+	  # If Firefox is up to date already, log it and exit.
+    else
+    	echo "$logStart Firefox is already up to date, running ${currentinstalledver}." >> "$logFile"
+    fi
+    exit
+else
+    echo "$logStart Invalid Firefox configuration" >> "$logFile"
+fi
+# ------------------------------------------------------------------------------

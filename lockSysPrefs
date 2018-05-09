@@ -1,0 +1,45 @@
+#!/bin/bash
+# ------------------------------------------------------------------------------
+# lockSysPrefs (UNIX. Exec.)
+# Script to lock system-wide preferences from non-admin users
+# https://derflounder.wordpress.com/2014/02/16/managing-the-authorization-database-in-os-x-mavericks/
+# Last Edited: 4/25/18
+# ------------------------------------------------------------------------------
+source /usr/local/massmgmt/lib/massmgmtlib.sh
+
+scriptEnabled="$(cat $configFile | awk '/LockSystemPreferences/ {print $2}')"
+# ------------------------------------------------------------------------------
+# functions
+function check_enabled {
+	  if [ "$scriptEnabled" == "Enable" ] ; then
+		    echo "$logStart lockSysPrefs is enabled, locking" >> "$logFile"
+		    lock_prefs
+	  elif [ "$scriptEnabled" == "Disable" ] ; then
+		    echo "$logStart lockSysPrefs is disabled, unlocking" >> "$logFile"
+		    unlock_prefs
+	  else
+		    echo "$logStart lockSysPrefs has an invalid configuration in the config file, exiting" >> "$logFile"
+		    exit
+	  fi
+}
+
+function lock_prefs {
+	  echo "$logStart Locking system-wide preferences from non-admin users" >> "$logFile"
+	  sudo security authorizationdb read system.preferences > /tmp/system.preferences.plist 2>> "$logFile"
+	  sudo /usr/libexec/PlistBuddy -c 'Set :shared false' /tmp/system.preferences.plist 2>> "$logFile"
+  	  sudo security authorizationdb write system.preferences < /tmp/system.preferences.plist 2>> "$logFile"
+	  sudo rm /tmp/system.preferences.plist
+}
+
+function unlock_prefs {
+	  echo "$logStart Unlocking system-wide preferences from non-admin users" >> "$logFile"
+	  sudo security authorizationdb read system.preferences > /tmp/system.preferences.plist 2>> "$logFile"
+	  sudo /usr/libexec/PlistBuddy -c 'Set :shared true' /tmp/system.preferences.plist 2>> "$logFile"
+	  sudo security authorizationdb write system.preferences < /tmp/system.preferences.plist 2>> "$logFile"
+	  sudo rm /tmp/system.preferences.plist
+}
+
+# ------------------------------------------------------------------------------
+check_enabled
+exit
+# ------------------------------------------------------------------------------

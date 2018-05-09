@@ -1,0 +1,48 @@
+#!/bin/bash
+# -----------------------------------------------------------------------------
+# enableSSH (UNIX exec.)
+# enables ssh for $adminUser
+# Last Edited: 4/25/18
+# -----------------------------------------------------------------------------
+source /usr/local/massmgmt/lib/massmgmtlib.sh
+
+sshCheck="$(sudo systemsetup getremotelogin | awk '/Remote/ {print $(3) }')"
+scriptEnabled="$(cat $configFile | awk '/EnableSSH/ {print $2}')"
+# -----------------------------------------------------------------------------
+# check if the script is enabled in the config file
+if [ "$scriptEnabled" == "Disable" ] ; then
+    echo "$logStart enableSSH is disabled in the configuration file" >> "$logFile"
+    if [ "$sshCheck" == "On" ] ; then
+  	    echo "$logStart SSH disabled but is on, turning off SSH" >> "$logFile"
+    	    sudo systemsetup setremotelogin off
+	    sudo systemsetup setremotelogin off
+    else
+  	    echo "$logStart SSH is disabled" >> "$logFile"
+    fi
+    exit
+elif [ "$scriptEnabled" == "Enable" ] ; then
+    if [ "$sshCheck" == "On" ] ; then
+    	echo "$logStart SSH was already set to On" >> "$logFile"
+    elif [ "$sshCheck" == "Off" ] ; then
+    	echo "$logStart SSH set to Off" >> "$logFile"
+    	userID="$(/usr/bin/dscl localhost -read /Local/Default/Users/$adminUser | grep GeneratedUID | awk '{print $2}')"
+        if [ "$userID" != "" ] ; then
+            echo "$logStart Granting SSH Access for $adminUser with GUID $userID" >> "$logFile"
+            sudo /usr/bin/dscl localhost -create /Local/Default/Groups/com.apple.access_ssh
+            sudo /usr/bin/dscl localhost -append /Local/Default/Groups/com.apple.access_ssh GroupMembership "$adminUser"
+            sudo /usr/bin/dscl localhost -append /Local/Default/Groups/com.apple.access_ssh GroupMembers "$userID"
+            sudo /usr/bin/dscl localhost -append /Local/Default/Groups/com.apple.access_ssh RealName 'Remote Login Group'
+            sudo /usr/bin/dscl localhost -append /Local/Default/Groups/com.apple.access_ssh PrimaryGroupID 104
+            sudo systemsetup setremotelogin on
+            echo "$logStart SSH set to On" >> "$logFile"
+    	else
+            echo "$logStart No record was found for $adminUser" >> "$logFile"
+    	fi
+    else
+        echo "$logStart Failed, exiting" >> "$logFile"
+    fi
+else
+    echo "$logStart Invalid enableSSH configuration" >> "$logFile"
+fi
+exit
+# -----------------------------------------------------------------------------

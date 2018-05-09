@@ -1,0 +1,39 @@
+#!/bin/sh
+# -----------------------------------------------------------------------------
+# enableARD (UNIX exec.)
+# enableARD arg
+# Last Edited: 4/25/18
+# -----------------------------------------------------------------------------
+source /usr/local/massmgmt/lib/massmgmtlib.sh
+
+lineTemplate="com.apple.RemoteDesktop.agent"
+ARD="$(launchctl list | grep '^\d.*RemoteDesktop.*')"
+Agent="$(echo $ARD | awk '/com.apple.RemoteDesktop.agent/ {print $(NF) }')"
+scriptEnabled="$(cat $configFile | awk '/EnableARD/ {print $2}')"
+# -----------------------------------------------------------------------------
+# check if the script is enabled in the config file
+if [ "$scriptEnabled" == "Disable" ] ; then
+    if [ "$Agent" == "$lineTemplate" ] ; then
+	echo "$logStart ARD disabled but turned on, turning off" >> "$logFile"
+	sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -deactivate -configure -access -off
+	echo "$logStart ARD is now off" >> "$logFile"
+    else
+	echo "$logStart ARD is Disabled and off" >> "$logFile"
+    fi
+elif [ "$scriptEnabled" == "Enable" ] ; then
+    if [ "$Agent" == "$lineTemplate" ] ; then
+        echo "$logStart ARD already enabled, exiting" >> "$logFile"
+    else
+    	privs="-DeleteFiles -ControlObserve -TextMessages -OpenQuitApps -GenerateReports -RestartShutDown -SendFiles -ChangeSettings"
+    	echo "$logStart Privileges: $privs" >> "$logFile"
+    	echo "$logStart Kickstarting ARD" >> "$logFile"
+    	sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -allowAccessFor -specifiedUsers
+    	echo "$logStart Giving $adminUser correct privileges" >> "$logFile"
+    	sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -access -on -privs $privs -users $adminUser
+        exit
+    fi
+else
+    echo "$logStart Invalid enableARD configuration" >> "$logFile"
+fi
+exit
+# -----------------------------------------------------------------------------

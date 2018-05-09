@@ -1,0 +1,133 @@
+#!/bin/bash
+# -----------------------------------------------------------------------------
+# autoUpdateCheck (UNIX Exec.)
+# Check to see if auto updates are set to the desired value
+# Last Edited: 5/2/18
+# -----------------------------------------------------------------------------
+source /usr/local/massmgmt/lib/massmgmtlib.sh
+
+# -----------------------------------------------------------------------------
+# check curent settings
+autoCheckEnabled="$(sudo defaults read /Library/Preferences/com.apple.SoftwareUpdate | awk '/AutomaticCheckEnabled = / {print $3}')"
+commerceAutoUpdate="$(sudo defaults read /Library/Preferences/com.apple.commerce | awk '/AutoUpdate = / {print $3}')"
+autoMacUpdate="$(sudo defaults read /Library/Preferences/com.apple.commerce | awk '/AutoUpdateRestartRequired = / {print $3}')"
+autoMacDownload="$(sudo defaults read /Library/Preferences/com.apple.SoftwareUpdate | awk '/AutomaticDownload = / {print $3}')"
+sysDataFiles1="$(sudo defaults read /Library/Preferences/com.apple.SoftwareUpdate | awk '/CriticalUpdateInstall = / {print $3}')"
+sysDataFiles2="$(sudo defaults read /Library/Preferences/com.apple.SoftwareUpdate | awk '/ConfigDataInstall = / {print $3}')"
+
+# check config file for desired settings
+autoCheck="$(cat $configFile | awk '/AutomaticCheck/ {print $2}')"
+appUpdate="$(cat $configFile | awk '/AppUpdate/ {print $2}')"
+macUpdate="$(cat $configFile | awk '/MacOSUpdate/ {print $2}')"
+autoDownload="$(cat $configFile | awk '/AutomaticDownload/ {print $2}')"
+systemFiles="$(cat $configFile | awk '/SystemDataFile/ {print $2}')"
+
+# assign value for plist based on config file --------------------------------
+# automatically check for updates
+if [ "$autoCheck" == "Enable" ] ; then
+	autoCheck="1;"
+else
+	autoCheck="0;"
+fi
+
+# update macOS apps
+if [ "$appUpdate" == "Enable" ] ; then
+	appUpdate="1;"
+else
+	appUpdate="0;"
+fi
+
+# update macOS automatically
+if [ "$macUpdate" == "Enable" ] ; then
+	macUpdate="1;"
+else
+	macUpdate="0;"
+fi
+
+# download updates automatically for installation
+if [ "$autoDownload" == "Enable" ] ; then
+	autoDownload="1;"
+else
+	autoDownload="0;"
+fi
+
+# install system files automatically
+if [ "$systemFiles" == "Enable" ] ; then
+	systemFiles="1;"
+else
+	systemFiles="0;"
+fi
+
+# -----------------------------------------------------------------------------
+# set parameters
+# -----------------------------------------------------------------------------
+# parameter that specifies scheduled checking for updates
+if [ "$autoCheck" == "$autoCheckEnabled" ] ; then
+	echo "$logStart Desired state in place for automatic checking for updates" >> "$logFile"
+else
+	if [ "$autoCheck" == "0;" ] ; then    # if current value is false (off), turn on
+        	echo "$logStart Setting Software Update scheduled checks --> On" >> "$logFile"
+ 		sudo softwareupdate --schedule on
+    	else     # if current value is true (on), turn off
+		echo "$logStart Setting Software Update scheduled checks --> Off" >> "$logFile"
+		sudo softwareupdate --schedule off
+    	fi
+fi
+# -----------------------------------
+# parameter for automatic app updates
+if [ "$appUpdate" == "$commerceAutoUpdate" ] ; then
+	echo "$logStart Desired state in place for app store automatic updates" >> "$logFile"
+else
+	if [ "$appUpdate" == "0;" ] ; then
+    		echo "$logStart Setting automatic app updates --> On" >> "$logFile"
+    		sudo defaults write /Library/Preferences/com.apple.commerce AutoUpdate -bool TRUE
+    	else
+    		echo "$logStart Setting automatic app updates --> Off" >> "$logFile"
+    		sudo defaults write /Library/Preferences/com.apple.commerce AutoUpdate -bool FALSE
+    	fi
+fi
+# -----------------------------------
+# parameter for macOS updates
+if [ "$macUpdate" == "$autoMacUpdate" ] ; then
+	echo "$logStart Desired state in place for automatic macOS updates" >> "$logFile"
+else
+	if [ "$macUpdate" == "0;" ] ; then
+        	echo "$logStart Setting automatic macOS updates --> On" >> "$logFile"
+    		sudo defaults write /Library/Preferences/com.apple.commerce AutoUpdateRestartRequired -bool TRUE
+    	else
+    		echo "Setting automatic macOS updates --> Off" >> "$logFile"
+    		sudo defaults write /Library/Preferences/com.apple.commerce AutoUpdateRestartRequired -bool FALSE
+    	fi
+fi
+# -----------------------------------
+# parameter for automatic download of available updates
+if [ "$autoDownload" == "$autoMacDownload" ] ; then
+	echo "$logStart Desired state in place for automatic downloads of macOS updates" >> "$logFile"
+else
+	if [ "$autoMacDownload" == "0;" ] ; then
+    		echo "$logStart Setting automatic download --> On" >> "$logFile"
+    		sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticDownload -bool TRUE
+    	else
+    		echo "$logStart Setting automatic download --> Off" >> "$logFile"
+    		sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate AutomaticDownload -bool FALSE
+    	fi
+fi
+# -----------------------------------
+# "install system data files"
+if [ "$systemFiles" == "$sysDataFiles1" ] ; then
+	echo "$logStart Desired state in place for automatic macOS updates" >> "$logFile"
+else
+	if [ "$systemFiles" == "0;" ] ; then
+   		echo "$logStart Setting install system data files --> On" >> "$logFile"
+   		sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate CriticalUpdateInstall -bool TRUE
+   		sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate ConfigDataInstall -bool TRUE
+    	else
+   		echo "$logStart Setting install system data files --> Off    ***Not Recommended" >> "$logFile"
+   		sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate CriticalUpdateInstall -bool False
+   		sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate ConfigDataInstall -bool False
+   	fi
+fi
+
+echo "$logStart All parameters set, exiting" >> "$logFile"
+exit
+# -----------------------------------------------------------------------------

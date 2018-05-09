@@ -1,0 +1,56 @@
+#!/bin/bash
+# -----------------------------------------------------------------------------
+# chrome (UNIX exec.)
+# update/install Google Chrome
+# Last Edited: 4/25/18
+# -----------------------------------------------------------------------------
+source /usr/local/massmgmt/lib/massmgmtlib.sh
+
+dmgfile="googlechrome.dmg"
+volname="Google Chrome"
+url='https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg'
+scriptEnabled="$(cat $configFile | awk '/UpdateChrome/ {print $2}')"
+deleteIfInstalled="$(cat $configFile | awk '/DeleteIfInstalled/ {print $2}')"
+incognitoMode="$(cat $configFile | awk '/IncognitoMode/ {print $2}')"
+# -----------------------------------------------------------------------------
+# check if the script is enabled in the config file
+if [ "$scriptEnabled" == "Disable" ] ; then
+    if [ "$deleteIfInstalled" == "Yes" ] ; then
+	echo "$logStart Removing Google Chrome.app" >> "$logFile"
+	sudo rm -rf /Applications/Googe\ Chrome.app
+    elif [ "$deleteIfInstalled" == "No" ] ; then
+	echo "$logStart Chrome script disabled but Google Chrome allowed on this system" >> "$logFile"
+    else
+	echo $logStart "Invalid configuration for DeleteIfInstalled key in the chrome section of the configuration file" >> "$logFile"
+    fi
+    exit
+elif [ "$scriptEnabled" == "Enable" ] ; then
+    # check if the .txt file created by checkChrome.py exists and if so, update chrome
+    if [ -f "/tmp/updateChrome.txt" ] ; then
+    	echo "$logStart Installing/updating Google Chrome" >> "$logFile"
+    	curl -s -o /tmp/$dmgfile $url
+    	hdiutil attach /tmp/$dmgfile -nobrowse -quiet
+    	sudo ditto -rsrc "/Volumes/$volname/Google Chrome.app" "/Applications/Google Chrome.app"
+    	hdiutil detach $(/bin/df | /usr/bin/grep "$volname" | awk '{print $1}') -quiet
+    	rm /tmp/"$dmgfile"
+        # check if incognito mode is enabled or disabled
+        if [ "$incognitoMode" == "Enabled" ] ; then
+    	    echo "$logStart Incognito mode is allowed on this system" >> "$logFile"
+    	    sudo rm /Library/Preferences/com.google.Chrome.plist
+        elif [ "$incognitoMode" == "Disable" ] ; then
+    	    echo "$logStart Moving com.google.Chrome.plist (disable incognito mode) into /Library/Preferences" >> "$logFile"
+    	    sudo cp /usr/local/massmgmt/conf/com.google.Chrome.plist /Library/Preferences
+    	    echo "$logStart Google Chrome installed/updated and incognito mode disabled, exiting" >> "$logFile"
+        else
+    	    echo "$logStart Unknown Incognito Mode configuration option" >> "$logFile"
+        fi
+        # close out log and clean out /tmp/updateChrome.txt file to avoid triggering the script again after updating
+        rm /tmp/updateChrome.txt
+    else
+        echo "$logStart Chrome already up to date" >> "$logFile"
+    fi
+else
+    echo "$logStart Invalid Chrome configuration" >> "$logFile"
+fi
+exit
+# -----------------------------------------------------------------------------

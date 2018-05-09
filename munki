@@ -1,0 +1,26 @@
+#!/bin/bash
+# -----------------------------------------------------------------------------
+# munki (UNIX exec.)
+# configure munki (if desired)
+# Last Edited: 4/25/18
+# -----------------------------------------------------------------------------
+source /usr/local/massmgmt/lib/massmgmtlib.sh
+
+scriptEnabled="$(cat $configFile | awk '/Munki/ {print $2}')"
+munkiURL="$(cat $configFile | awk '/MunkiURL/ {print $2}')"
+munkiClient="$(cat $configFile | awk '/MunkiClient/ {print $2}')"
+# -----------------------------------------------------------------------------
+if [ "$scriptEnabled" == "Disable" ] ; then
+    echo "$logStart Munki configuration is disabled" >> "$logFile"
+    exit
+elif [ "$scriptEnabled" == "Enable" ] ; then
+    echo "$logStart Configuring Munki URL: $munkiURL" >> "$logFile"
+    sudo defaults write /Library/Preferences/ManagedInstalls SoftwareRepoURL "$munkiURL"
+    echo "$logStart Configuring Munki Client: $munkiClient" >> "$logFile"
+    sudo defaults write /Library/Preferences/ManagedInstalls ClientIdentifier "$munkiClient"
+    echo "$logStart Munki configuration complete" >> "$logFile"
+else
+    echo "$logStart Munki configuration invalid" >> "$logFile"
+fi
+exit
+# -----------------------------------------------------------------------------

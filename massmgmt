@@ -1,0 +1,173 @@
+#!/bin/bash
+# -----------------------------------------------------------------------------
+#                                massmgmt
+#                 launchd-based macOS desired-state management
+#                          Last Edited: 4/25/18
+# -----------------------------------------------------------------------------
+# variables
+configFile="/usr/local/massmgmt/massmgmt.config"
+
+# define admin user
+adminUser="$(cat $configFile | awk '/AdminUserID/ {print $2}')"
+
+# log file
+logFile="$(cat $configFile | awk '/LogFile/ {print $2}')"
+starDate="$(date)"
+hostName="$(hostname)"
+
+# define location of help page
+helpPage="$(cat $configFile | awk '/HelpPage/ {print $2}')"
+
+# define bin location for scripts
+binLoc="$(cat $configFile | awk '/ScriptLocation/ {print $2}')"
+
+# define directory for configuration profiles
+profLoc="$(cat $configFile | awk '/MobileConfigLocation/ {print $2}')"
+
+# -----------------------------------------------------------------------------
+# functions
+function massmgmtRun {
+    $binLoc/autoUpdate
+    $binLoc/adobeReader
+    $binLoc/checkChrome.py
+    $binLoc/chrome
+    $binLoc/enableARD
+    $binLoc/enableSSH
+    $binLoc/firefox
+    $binLoc/lockSysPrefs
+    $binLoc/munki
+    $binLoc/powerOptions
+    $binLoc/setFirewall
+    $binLoc/setHostname
+    $binLoc/setTimezone
+    $binLoc/sus
+}
+
+function interactiveMode {
+    echo
+    ls -l "$binLoc" | awk '/-/ {print $9}'
+    echo
+    printf "Run which script? Or enter 'q' to quit -> "
+    read A
+    if [ "$A" == "q" ] ; then
+    	exit
+    elif [ "$A" == "autoUpdate" ] ; then
+	echo "$logStart -- Running autoUpdate interactively" | tee "$logFile"
+    	$binLoc/autoUpdate
+    elif [ "$A" == "adobeReader" ] ; then
+    	echo "$logStart -- Running adobeReader interactively" | tee "$logFile"
+	$binLoc/adobeReader
+    elif [ "$A" == "chrome" ] ; then
+	echo "$logStart -- Running chrome interactively" | tee "$logFile"
+   	$binLoc/checkChrome.py
+	$binLoc/chrome
+    elif [ "$A" == "enableARD" ] ; then
+	echo "$logStart -- Running enableARD interactively" | tee "$logFile"
+  	$binLoc/enableARD
+    elif [ "$A" == "enableSSH" ] ; then
+	echo "$logStart -- Running enableSSH interactively" | tee "$logFile"
+  	$binLoc/enableSSH  
+    elif [ "$A" == "firefox" ] ; then
+  	echo "$logStart -- Running firefox interactively" | tee "$logFile"
+    	$binLoc/firefox
+    elif [ "$A" == "munki" ] ; then
+  	echo "$logStart -- Running munki interactively" | tee "$logFile"
+    	$binLoc/munki
+    elif [ "$A" == "lockSysPrefs" ] ; then
+    	echo "$logStart --Running lockSysPrefs interactively" | tee "$logFile"
+    	$binLoc/lockSysPrefs
+    elif [ "$A" == "powerOptions" ] ; then
+    	echo "$logStart -- Running powerOptions interactively" | tee "$logFile"
+	$binLoc/powerOptions
+    elif [ "$A" == "setFirewall" ] ; then
+   	echo "$logStart -- Running setFirewall" | tee "$logFile"
+   	$binLoc/setFirewall
+    elif [ "$A" == "setHostname" ] ; then
+  	echo "$logStart -- Running setHostname interactively" | tee "$logFile"
+    	$binLoc/setHostname
+    elif [ "$A" == "setTimeZone" ] ; then
+  	echo "$logStart -- Running setTimezone interactively" | tee "$logFile"
+    	$binLoc/setTimezone
+    elif [ "$A" == "sus" ] ; then
+  	echo "$logStart -- Running sus interactively" | tee "$logFile"
+    	$binLoc/sus
+    else
+  	interactiveMode
+    fi
+}
+
+function flushLog {
+    printf "Are you sure you want to flush the log directory? (y/n) -> "
+    read A
+    if [ "$A" == "n" ] ; then
+        exit
+    elif [ "$A" == "y" ] ; then
+        echo "Removing $logFile"
+        rm "$logFile"
+        touch "$logFile"
+        echo "Log flushed"
+        exit
+    else
+        echo "Invalid option"
+    fi
+}
+
+function pullLog {
+    currentUser="$(id -un)"
+    echo "Pulling log"
+    sudo cp "$logFile" "/Users/$currentUser/Desktop/"
+    if [ -e "/Users/$currentUser/Desktop/massmgmt.log" ] ; then
+    	open "/Users/$currentUser/Desktop"
+	open "/Users/$currentUser/Desktop/massmgmt.log"
+    	echo "Process Complete"
+    else
+    	exit
+    fi
+}
+
+function rmProfiles {
+    echo "Removing all configuration profiles installed on this computer."
+    sudo profiles -D
+}
+
+function installProfiles {
+    printf "Install all configuration profiles stored in /usr/local/massmgmt/mconfig? (y/n) -> "
+    read B
+    if [ "$B" == "n" ] ; then
+        exit
+    elif [ "B" == "y" ] ; then
+        echo "Installing all configuration profiles stored in $profLoc"
+        cd "$profLoc"
+        ls -l | awk '/-rw/ {print $(9) }' >> "$profLoc/profiles.txt"
+        cat "$profLoc/profiles.txt" | while read line
+        do
+            sudo profiles -I "$profLoc/$line"
+            echo "Profiles installed."
+        done
+    else
+        exit
+    fi
+}
+
+# -----------------------------------------------------------------------------
+# options that can be called using: $ massmgmt <option>
+
+if [ "$1" == "flushLog" ] ; then
+    flushLog
+elif [ "$1" == "pullLog" ] ; then
+    pullLog
+elif [ "$1" == "rmProfiles" ] ; then
+    rmProfiles
+elif [ "$1" == "installProfiles" ] ; then
+    installProfiles
+elif [ "$1" == "help" ] ; then
+    cat $helpPage
+elif [ "$1" == "-im" ] ; then
+    echo "Entering interactive mode..."
+    interactiveMode
+else
+    # if no option is specified, $ massmgmt will run the tool
+    massmgmtRun
+fi
+exit
+# -----------------------------------------------------------------------------
