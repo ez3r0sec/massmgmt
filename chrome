@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # chrome (UNIX exec.)
 # update/install Google Chrome
-# Last Edited: 4/25/18
+# Last Edited: 5/17/18
 # -----------------------------------------------------------------------------
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
@@ -21,7 +21,7 @@ if [ "$scriptEnabled" == "Disable" ] ; then
     elif [ "$deleteIfInstalled" == "No" ] ; then
 	echo "$logStart Chrome script disabled but Google Chrome allowed on this system" >> "$logFile"
     else
-	echo $logStart "Invalid configuration for DeleteIfInstalled key in the chrome section of the configuration file" >> "$logFile"
+	echo "$logStart Invalid configuration for DeleteIfInstalled key in the chrome section of the configuration file" >> "$logFile"
     fi
     exit
 elif [ "$scriptEnabled" == "Enable" ] ; then
