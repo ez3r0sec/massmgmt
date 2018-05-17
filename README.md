@@ -14,7 +14,7 @@ to more efficiently spend their time.
 # Description
 The massmgmt suite uses a series of bash and python scripts to maintain a desired 
 state configuration on macOS endpoints. Massmgmt is configured to run on startup
-at a defined time each day using a launch daemon (org.massmgmt.plist). Because the 
+at a defined interval using a launch daemon (org.massmgmt.plist). Because the 
 suite is built on multiple scripts, it is modular and easy for system administrators to maintain. 
 The directory that scripts are stored in is /usr/local/massmgmt/bin.
 In addition to these scripts there are plans for endpoint log analysis and security
