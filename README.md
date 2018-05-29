@@ -1,6 +1,6 @@
 # massmgmt
-Version 2.0.0                                                             
-Last Edited: 5/17/18                                                                                                 
+Version 2.0.1                                                           
+Last Edited: 5/29/18                                                                                                 
 
 # Purpose
 The massmgmt suite came about as an attempt to automate configuration and patch management
@@ -37,33 +37,33 @@ The massmgmt tool has logging built into the scripts that are included. The
 log file is located at /usr/local/massmgmt/massmgmt.log. The log may also be
 flushed by entering the command:
 
-> $ massmgmt flushLog
+> massmgmt flushLog
 
 Logs may also be retrieved to the desktop directory of the current user with:
 
-> $ massmgmt pullLog
+> massmgmt pullLog
 
 Massmgmt can also be called so that admins can interactively call individual scripts
 by entering the command:
 
-> $ massmgmt -im
+> massmgmt -im
 
 This command enters “interactive mode” and is logged as such for auditing
 interactions. Massmgmt may also be run in its entirety by entering:
 
-> $ massmgmt
+> massmgmt
 
 Massmgmt also supports installing and removing configuration profiles. Profiles are
 stored in /usr/local/massmgmt/mconfig so they could be installed whenever the desired
 state is not in place. The administrator can interactively install profiles using the
 following command:
 
-> $ massmgmt installProfiles
+> massmgmt installProfiles
 
 For especially restrictive profiles, a profile removal command is available during
 troubleshooting:
 
-> $ massmgmt rmProfiles
+> massmgmt rmProfiles
 
 # Requirements
 
