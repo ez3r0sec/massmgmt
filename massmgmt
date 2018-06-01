@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 #                                massmgmt
 #                 launchd-based macOS desired-state management
-#                          Last Edited: 4/25/18
+#                          Last Edited: 6/1/18
 # -----------------------------------------------------------------------------
 # variables
 configFile="/usr/local/massmgmt/massmgmt.config"
@@ -29,7 +29,7 @@ profLoc="$(cat $configFile | awk '/MobileConfigLocation/ {print $2}')"
 function massmgmtRun {
     $binLoc/autoUpdate
     $binLoc/adobeReader
-    $binLoc/checkChrome.py
+    $binLoc/checkChrome
     $binLoc/chrome
     $binLoc/enableARD
     $binLoc/enableSSH
@@ -59,7 +59,7 @@ function interactiveMode {
 	$binLoc/adobeReader
     elif [ "$A" == "chrome" ] ; then
 	echo "$logStart -- Running chrome interactively" | tee "$logFile"
-   	$binLoc/checkChrome.py
+   	$binLoc/checkChrome
 	$binLoc/chrome
     elif [ "$A" == "enableARD" ] ; then
 	echo "$logStart -- Running enableARD interactively" | tee "$logFile"
