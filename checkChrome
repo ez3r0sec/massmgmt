@@ -2,7 +2,7 @@
 # ------------------------------------------------------------------------------
 # checkChrome.py (Python 2.7)
 # Check if chrome is installed/up to date and install if not installed or out of date
-# Last Edited: 3/13/18
+# Last Edited: 6/1/18
 # ------------------------------------------------------------------------------
 # import libraries
 import json
