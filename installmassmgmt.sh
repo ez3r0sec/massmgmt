@@ -2,13 +2,15 @@
 # -----------------------------------------------------------------------------
 # installmassmgmt.sh
 # install the components of the massmgmt suite in the correct locations
-# Last Edited: 1/15/18
+# Last Edited: 6/1/18
 # -----------------------------------------------------------------------------
 
 # remove previous installation
-sudo rm -rf /usr/local/massmgmt
-sudo rm /usr/local/bin/massmgmt
-sudo rm /Library/LaunchDaemons/org.massmgmt.plist
+if [ -e "/usr/local/massmgmt" ] ; then
+    sudo rm -rf /usr/local/massmgmt
+    sudo rm /usr/local/bin/massmgmt
+    sudo rm /Library/LaunchDaemons/org.massmgmt.plist
+fi
 
 # set up directories
 sudo mkdir /usr/local/massmgmt
