@@ -9,9 +9,11 @@ import json
 import urllib2
 import os.path
 import plistlib
+
 # variables --------------------------------------------------------------------
 url = 'http://omahaproxy.appspot.com/all.json'
 osPath = "/Applications/Google Chrome.app"
+
 # ------------------------------------------------------------------------------
 if os.path.exists(osPath) is True:
     resp = urllib2.urlopen(url)
