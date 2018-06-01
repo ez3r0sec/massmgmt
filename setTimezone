@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # setTimezone (UNIX exec.)
 # set timezone
-# Last Edited: 4/25/18
+# Last Edited: 6/1/18
 # -----------------------------------------------------------------------------
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
@@ -19,7 +19,7 @@ elif [ "$scriptEnabled" == "Enable" ] ; then
         exit
     else
    	echo "Setting timezone to $timeZone" >> "$logFile"
-    	sudo systemsetup -settimezone "$timeZone"
+    	sudo systemsetup -settimezone "$timeZone" >> "$logFile"
     	killall SystemUIServer
     	echo "$logStart Timezone set to $timeZone, exiting" >> "$logFile"
     fi
