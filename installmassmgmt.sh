@@ -75,7 +75,7 @@ chmod 755 setFirewall
 chmod 755 setHostname
 chmod 755 setTimezone
 chmod 755 sus
-chmod 755 checkChrome.py
+chmod 755 checkChrome
 
 chmod 755 /usr/local/massmgmt/lib/massmgmtlib.sh
 
