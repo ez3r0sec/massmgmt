@@ -28,7 +28,7 @@ copyLoc="/usr/local/massmgmt/bin"
 
 sudo cp autoUpdate $copyLoc
 sudo cp adobeReader $copyLoc
-sudo cp checkChrome.py $copyLoc
+sudo cp checkChrome $copyLoc
 sudo cp chrome $copyLoc
 sudo cp firefox $copyLoc
 sudo cp enableSSH $copyLoc
