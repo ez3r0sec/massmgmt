@@ -2,13 +2,13 @@
 # -----------------------------------------------------------------------------
 # setTimezone (UNIX exec.)
 # set timezone
-# Last Edited: 6/1/18
+# Last Edited: 6/16/18
 # -----------------------------------------------------------------------------
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
 scriptEnabled="$(cat $configFile | awk '/SetTimezone/ {print $2}')"
 timeZone="$(cat $configFile | awk '/TimeZone/ {print $2}')"
-currentTimeZone="$(sudo systemsetup -gettimezone | awk '/Time Zone/ {print $(3) }')"
+currentTimeZone="$(systemsetup -gettimezone | awk '/Time Zone/ {print $(3) }')"
 # -----------------------------------------------------------------------------
 if [ "$scriptEnabled" == "Disable" ] ; then
     echo "$logStart setTimezone disabled" >> "$logFile"
@@ -19,7 +19,7 @@ elif [ "$scriptEnabled" == "Enable" ] ; then
         exit
     else
    	echo "Setting timezone to $timeZone" >> "$logFile"
-    	sudo systemsetup -settimezone "$timeZone" >> "$logFile"
+    	systemsetup -settimezone "$timeZone" >> "$logFile"
     	killall SystemUIServer
     	echo "$logStart Timezone set to $timeZone, exiting" >> "$logFile"
     fi
