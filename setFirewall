@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # setFirewall (UNIX Exec.)
 # Control the ALF firewall
-# Last Edited: 5/2/18
+# Last Edited: 6/16/18
 # -----------------------------------------------------------------------------
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 scriptEnabled="$(cat $configFile | awk '/SetFirewall/ {print $2}')"
@@ -30,19 +30,19 @@ function check_on {
 }
 
 function check_logging {
-	loggingSet="$(sudo defaults read /Library/Preferences/com.apple.alf.plist loggingenabled)"
+	loggingSet="$(defaults read /Library/Preferences/com.apple.alf.plist loggingenabled)"
 	chkConfigLogging="$(cat $configFile | awk '/FirewallLogging/ {print $2}')"
 	chkConfigLevel="$(cat $configFile | awk '/LoggingLevel/ {print $2}')"
 	if [ "$loggingSet" == "1" ] ; then
 		echo "$logStart Logging is already ON" >> "$logFile"
-		sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setloggingopt $chkConfigLevel >> "$logFile" 2>&1
+		/usr/libexec/ApplicationFirewall/socketfilterfw --setloggingopt $chkConfigLevel >> "$logFile" 2>&1
 	else
 		echo "Logging is set to OFF" >> "$logFile"
 		if [ "$chkConfigLogging" == "Enable" ] ; then
 			echo "$logStart Firewall logging is enabled in the config file, enabling" >> "$logFile"
-			sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setloggingmode on
+			/usr/libexec/ApplicationFirewall/socketfilterfw --setloggingmode on
 			echo "$logStart Setting logging level to $chkConfigLevel" >> "$logFile"
-			sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setloggingopt $chkConfigLevel >> "$logFile" 2>&1
+			/usr/libexec/ApplicationFirewall/socketfilterfw --setloggingopt $chkConfigLevel >> "$logFile" 2>&1
 		else
 			echo "$logStart Firewall logging is disabled in the config file" >> "$logFile"
 		fi
@@ -50,8 +50,8 @@ function check_logging {
 }
 
 function check_signed {
-	allowSigned1="$(sudo defaults read /Library/Preferences/com.apple.alf.plist allowdownloadsignedenabled)"
-	allowSigned2="$(sudo defaults read /Library/Preferences/com.apple.alf.plist allowsignedenabled)"
+	allowSigned1="$(defaults read /Library/Preferences/com.apple.alf.plist allowdownloadsignedenabled)"
+	allowSigned2="$(defaults read /Library/Preferences/com.apple.alf.plist allowsignedenabled)"
 	configAllow="$(cat $configFile | awk '/AllowSignedApps/ {print $2}')"
 	if [ "$allowSigned1" == "1" ] ; then
 		echo "$logStart Allow download signed enabled" >> "$logFile"
@@ -59,13 +59,13 @@ function check_signed {
 	    		echo "$logStart Allow download signed enabled in config file" >> "$logFile"
 	    	else
 	        	echo "$logStart Allow download signed in config file, disabling" >> "$logFile"
-	        	sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned off >> "$logFile" 2>&1
+	        	/usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned off >> "$logFile" 2>&1
 	    	fi
 	else
 		echo "$logStart Allow download signed disabled" >> "$logFile"
 		if [ "$configAllow" == "Enable" ] ; then
 	    		echo "$logStart Allow download signed enabled in config file, enabling" >> "$logFile"
-	    		sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned on >> "$logFile" 2>&1
+	    		/usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned on >> "$logFile" 2>&1
 	    	else
 	        	echo "$logStart Allow download signed disabled in config file" >> "$logFile"
 	    	fi
@@ -77,13 +77,13 @@ function check_signed {
 	    		echo "$logStart Allow download signed enabled in config file" >> "$logFile"
 	    	else
 	        	echo "$logStart Allow download signed disabled in config file, disabling" >> "$logFile"
-	        	sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned off >> "$logFile" 2>&1
+	        	/usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned off >> "$logFile" 2>&1
 	    	fi
 	else
 		echo "$logStart Allow signed disabled" >> "$logFile"
 		if [ "$configAllow" == "Enable" ] ; then
 	    		echo "$logStart Allow download signed enabled in config file, enabling" >> "$logFile"
-	    		sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned on >> "$logFile" 2>&1
+	    		/usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned on >> "$logFile" 2>&1
 	    	else
 	        	echo "$logStart Allow download signed disabled in config file" >> "$logFile"
 	    	fi
@@ -91,7 +91,7 @@ function check_signed {
 }
 
 function check_stealth {
-	stealthModeState="$(sudo defaults read /Library/Preferences/com.apple.alf.plist stealthenabled)"
+	stealthModeState="$(defaults read /Library/Preferences/com.apple.alf.plist stealthenabled)"
 	configAllow="$(cat $configFile | awk '/StealthMode/ {print $2}')"
 	if [ "$stealthModeState" == "1" ] ; then
 		echo "$logStart Stealth Mode enabled" >> "$logFile"
@@ -99,13 +99,13 @@ function check_stealth {
 			echo "$logStart Stealth Mode enabled in config file" >> "$logFile"
 		else
 			echo "$logStart Stealth Mode disabled in config file" >> "$logFile"
-			sudo defaults write /Library/Preferences/com.apple.alf.plist stealthenabled -bool False >> "$logFile" 2>&1
+			defaults write /Library/Preferences/com.apple.alf.plist stealthenabled -bool False >> "$logFile" 2>&1
 		fi
 	else
 		echo "$logStart Stealth Mode disabled" >> "$logFile"
 		if [ "$configAllow" == "Enable" ] ; then
 			echo "$logStart Stealth Mode enabled in config file, enabling" >> "$logFile"
-			sudo defaults write /Library/Preferences/com.apple.alf.plist stealthenabled -bool True >> "$logFile" 2>&1
+			defaults write /Library/Preferences/com.apple.alf.plist stealthenabled -bool True >> "$logFile" 2>&1
 		else
 			echo "$logStart Stealth Mode disabled in config file" >> "$logFile"
 		fi
@@ -117,7 +117,7 @@ function turn_on {
 		exit
 	else
 		echo "$logStart Turning firewall back on" >> "$logFile"
-		sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on >> "$logFile" 2>&1
+		/usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on >> "$logFile" 2>&1
 	fi
 }
 # -----------------------------------------------------------------------------
