@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # enableARD (UNIX exec.)
 # enableARD arg
-# Last Edited: 4/25/18
+# Last Edited: 6/16/18
 # -----------------------------------------------------------------------------
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
@@ -15,7 +15,7 @@ scriptEnabled="$(cat $configFile | awk '/EnableARD/ {print $2}')"
 if [ "$scriptEnabled" == "Disable" ] ; then
     if [ "$Agent" == "$lineTemplate" ] ; then
 	echo "$logStart ARD disabled but turned on, turning off" >> "$logFile"
-	sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -deactivate -configure -access -off
+	/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -deactivate -configure -access -off
 	echo "$logStart ARD is now off" >> "$logFile"
     else
 	echo "$logStart ARD is Disabled and off" >> "$logFile"
@@ -27,9 +27,9 @@ elif [ "$scriptEnabled" == "Enable" ] ; then
     	privs="-DeleteFiles -ControlObserve -TextMessages -OpenQuitApps -GenerateReports -RestartShutDown -SendFiles -ChangeSettings"
     	echo "$logStart Privileges: $privs" >> "$logFile"
     	echo "$logStart Kickstarting ARD" >> "$logFile"
-    	sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -allowAccessFor -specifiedUsers
+    	/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate -configure -allowAccessFor -specifiedUsers
     	echo "$logStart Giving $adminUser correct privileges" >> "$logFile"
-    	sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -access -on -privs $privs -users $adminUser
+    	/System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -access -on -privs $privs -users $adminUser
         exit
     fi
 else
