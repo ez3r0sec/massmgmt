@@ -2,13 +2,12 @@
 # -----------------------------------------------------------------------------
 # setName (UNIX exec.)
 # set Hostname
-# Last Edited: 4/25/18
+# Last Edited: 6/16/18
 # -----------------------------------------------------------------------------
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
 scriptEnabled="$(cat $configFile | awk '/SetHostname/ {print $2}')"
 hostnameScheme="$(cat $configFile | awk '/HostnameFormat/ {print $2}')"
-# -----------------------------------------------------------------------------
 # Script Contents -------------------------------------------------------------
 if [ "$scriptEnabled" == "Disable" ] ; then
     echo "$logStart setHostname disabled" >> "$logFile"
@@ -18,11 +17,11 @@ elif [ "$scriptEnabled" == "Enable" ] ; then
     if [ "$hostnameScheme" == "Serial" ] ; then
 	serial="$(/usr/sbin/system_profiler SPHardwareDataType | /usr/bin/awk '/Serial\ Number\ \(system\)/ {print $NF}')"
 	if [ "$hostName" == "$serial" ] ; then
-    	    echo "T$logStart he computer hostname already set to serial number, exiting" >> "$logFile"
+    	    echo "$logStart The computer hostname already set to serial number, exiting" >> "$logFile"
 	else
-    	    sudo scutil --set ComputerName $serial
-    	    sudo scutil --set HostName $serial
-    	    sudo scutil --set LocalHostName $serial
+    	    scutil --set ComputerName $serial
+    	    scutil --set HostName $serial
+    	    scutil --set LocalHostName $serial
     	    echo "$logStart Computer hostname set to $serial, exiting" >> "$logFile"
 	fi
     else
