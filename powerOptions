@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 # powerOptions (UNIX exec.)
 # set scheduled reboots and other power settings on macOS
-# Last Edited: 4/25/18
+# Last Edited: 6/16/18
 # -----------------------------------------------------------------------------
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
@@ -12,71 +12,68 @@ if [ "$scriptEnabled" == "Disable" ] ; then
     echo "$logStart powerOptions disabled" >> "$logFile"
     exit
 elif [ "$scriptEnabled" == "Enable" ] ; then
-#####
-# display sleep time
+    # display sleep time
     displaySleepTime="$(cat $configFile | awk '/DisplaySleepTime/ {print $2}')"
     if [ "$displaySleepTime" != "" ] ; then
 	echo "$logStart Setting display sleep to $displaySleepTime" >> "$logFile"
-	sudo pmset -a displaysleep "$displaySleepTime"
+	pmset -a displaysleep "$displaySleepTime"
     else
 	echo "$logStart No display sleep time specified" >> "$logFile"
     fi
-# disk sleep time
+    # disk sleep time
     diskSleepTime="$(cat $configFile | awk '/DiskSleepTime/ {print $2}')"
     if [ "$diskSleepTime" != "" ] ; then
 	echo "$logStart Setting disk sleep to $diskSleepTime" >> "$logFile"
-	sudo pmset -a disksleep "$diskSleepTime"
+	pmset -a disksleep "$diskSleepTime"
     else
 	echo "$logStart No disk sleep time specified" >> "$logFile"
     fi
-# system sleep time
+    # system sleep time
     sysSleepTime="$(cat $configFile | awk '/SystemSleepTime/ {print $2}')"
     if [ "$sysSleepTime" != "" ] ; then
 	echo "$logStart Setting disk sleep to $sysSleepTime" >> "$logFile"
-	sudo pmset -a disksleep "$sysSleepTime"
+	pmset -a disksleep "$sysSleepTime"
     else
 	echo "$logStart No system sleep time specified" >> "$logFile"
     fi
-# --------------------------------------------
-# scheduled reboots, shutdown, sleep, and wake
-# reboot setup --
+    # scheduled reboots, shutdown, sleep, and wake
+    # reboot setup --
     rebootDays="$(cat $configFile | awk '/RebootDays/ {print $2}')"
     rebootTime="$(cat $configFile | awk '/RebootTime/ {print $2}')"
     if [ "$rebootDays" != "" ] ; then
 	echo "$logStart Setting restart to $rebootDays at $rebootTime" >> "$logFile"
-	sudo pmset repeat restart "$rebootDays" "$rebootTime"
+	pmset repeat restart "$rebootDays" "$rebootTime"
     else
 	echo "$logStart No reboot options specified" >> "$logFile"
     fi
-# shutdown setup --
+    # shutdown setup --
     shutdownDays="$(cat $configFile | awk '/ShutdownDays/ {print $2}')"
     shutdownTime="$(cat $configFile | awk '/ShutdownTime/ {print $2}')"
     if [ "$shutdownDays" != "" ] ; then
 	echo "$logStart Setting shutdown to $shutdownDays at $shutdownTime" >> "$logFile"
-	sudo pmset repeat shutdown "$shutdownDays" "$shutdownTime"
+	pmset repeat shutdown "$shutdownDays" "$shutdownTime"
     else
 	echo "$logStart No shutdown options specified" >> "$logFile"
     fi
-# sleep options --
+    # sleep options --
     sleepDays="$(cat $configFile | awk '/SleepDays/ {print $2}')"
     sleepTime="$(cat $configFile | awk '/SleepTime/ {print $2}')"
     if [ "$sleepDays" != "" ] ; then
 	echo "$logStart Setting wake to $wakeDays at $wakeTime" >> "$logFile"
-	sudo pmset repeat sleep "$sleepDays" "$sleepTime"
+	pmset repeat sleep "$sleepDays" "$sleepTime"
     else
 	echo "$logStart No sleep options specified" >> "$logFile"
     fi
-# wake options --
+    # wake options --
     wakeDays="$(cat $configFile | awk '/WakeDays/ {print $2}')"
     wakeTime="$(cat $configFile | awk '/WakeTime/ {print $2}')"
     if [ "$wakeDays" != "" ] ; then
-	sudo pmset repeat wakeorpoweron "$wakeDays" "$wakeTime"
+	pmset repeat wakeorpoweron "$wakeDays" "$wakeTime"
     else
 	echo "$logStart No wake options specified" >> "$logFile"
     fi
 else
     echo "$logStart Invalid powerOptions configuration" >> "$logFile"
-#####
 fi
 exit
 # -----------------------------------------------------------------------------
