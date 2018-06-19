@@ -4,7 +4,7 @@
 # Script to download and install Adobe Reader DC
 # modified from: https://www.jamf.com/jamf-nation/third-party-products/files/761/
 # adobe-reader-installer-updater
-# Last Edited: 4/25/18
+# Last Edited: 6/16/18
 # ------------------------------------------------------------------------------
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 scriptEnabled="$(cat $configFile | awk '/AdobeReader/ {print $2}')"
@@ -54,7 +54,7 @@ function update_reader {
 	if [ "${currentinstalledver}" != "${latestvernorm}" ]; then
 		curl -s -o /tmp/reader.dmg ${url} >> "$logFile" 2>&1
 		hdiutil attach /tmp/reader.dmg -nobrowse -quiet >> "$logFile" 2>&1
-		sudo installer -pkg /Volumes/AcroRdrDC_${ARCurrVersNormalized}_MUI/AcroRdrDC_${ARCurrVersNormalized}_MUI.pkg -target / >> "$logFile" 2>&1
+		installer -pkg /Volumes/AcroRdrDC_${ARCurrVersNormalized}_MUI/AcroRdrDC_${ARCurrVersNormalized}_MUI.pkg -target / >> "$logFile" 2>&1
 		sleep 10
 		hdiutil detach $(df | grep Adobe\ Acrobat\ Reader\ DC\ Installer | awk '{print $1}') -quiet >> "$logFile" 2>&1
 		sleep 10
