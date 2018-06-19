@@ -2,7 +2,7 @@
 # ------------------------------------------------------------------------------
 # Script to download or update Firefox
 # https://www.jamf.com/jamf-nation/third-party-products/files/764/firefox-install-update
-# Last Modified: 4/25/18
+# Last Modified: 6/16/18
 # ------------------------------------------------------------------------------
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
@@ -13,7 +13,7 @@ deleteIfInstalled="$(cat $configFile | awk '/Firefox-DeleteIfInstalled/ {print $
 if [ "$scriptEnabled" == "Disable" ] ; then
     if [ "$deleteIfInstalled" == "Yes" ] ; then
 	echo "$logStart Deleting Firefox" >> "$logFile"
-	sudo rm -rf /Applications/Firefox.app
+	rm -rf /Applications/Firefox.app
     elif [ "$deleteIfInstalled" == "No" ] ; then
 	echo "$logStart Firefox script is disabled but Firefox is allowed on this system" >> "$logFile"
     else
@@ -21,13 +21,13 @@ if [ "$scriptEnabled" == "Disable" ] ; then
     fi
     exit
 elif [ "$scriptEnabled" == "Enable" ] ; then
-  # Get OS version and adjust for use with the URL string
+    # Get OS version and adjust for use with the URL string
     OSvers_URL=$( sw_vers -productVersion | sed 's/[.]/_/g' )
-  # Set the User Agent string for use with curl
+    # Set the User Agent string for use with curl
     userAgent="Mozilla/5.0 (Macintosh; Intel Mac OS X ${OSvers_URL}) AppleWebKit/535.6.2 (KHTML, like Gecko) Version/5.2 Safari/535.6.2"
-  # Get the latest version of Reader available from Firefox page.
+    # Get the latest version of Reader available from Firefox page.
     latestver="$(/usr/bin/curl -s -A "$userAgent" https://www.mozilla.org/en-US/firefox/new/ | grep 'data-latest-firefox' | sed -e 's/.* data-latest-firefox="\(.*\)".*/\1/' -e 's/\"//' | /usr/bin/awk '{print $1}')"
-  # if the latestver curl fails, exit
+    # if the latestver curl fails, exit
     if [ "$latestver" == "" ] ; then
   	echo "$logStart latestver curl failed, exiting" >> "$logFile"
   	exit
@@ -55,7 +55,7 @@ elif [ "$scriptEnabled" == "Enable" ] ; then
         echo "$logStart Curling Firefox dmg"  >> "$logFile"
     	curl -s -o /tmp/${dmgfile} ${url}
     	hdiutil attach /tmp/${dmgfile} -nobrowse -quiet
-    	sudo ditto -rsrc "/Volumes/Firefox/Firefox.app" "/Applications/Firefox.app"
+    	ditto -rsrc "/Volumes/Firefox/Firefox.app" "/Applications/Firefox.app"
     	sleep 10
         hdiutil detach $(/bin/df | /usr/bin/grep Firefox | awk '{print $1}') -quiet
     	sleep 10
