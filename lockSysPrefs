@@ -3,7 +3,7 @@
 # lockSysPrefs (UNIX. Exec.)
 # Script to lock system-wide preferences from non-admin users
 # https://derflounder.wordpress.com/2014/02/16/managing-the-authorization-database-in-os-x-mavericks/
-# Last Edited: 4/25/18
+# Last Edited: 6/16/18
 # ------------------------------------------------------------------------------
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
@@ -25,18 +25,18 @@ function check_enabled {
 
 function lock_prefs {
 	  echo "$logStart Locking system-wide preferences from non-admin users" >> "$logFile"
-	  sudo security authorizationdb read system.preferences > /tmp/system.preferences.plist 2>> "$logFile"
-	  sudo /usr/libexec/PlistBuddy -c 'Set :shared false' /tmp/system.preferences.plist 2>> "$logFile"
-  	  sudo security authorizationdb write system.preferences < /tmp/system.preferences.plist 2>> "$logFile"
-	  sudo rm /tmp/system.preferences.plist
+	  security authorizationdb read system.preferences > /tmp/system.preferences.plist 2>> "$logFile"
+	  /usr/libexec/PlistBuddy -c 'Set :shared false' /tmp/system.preferences.plist 2>> "$logFile"
+  	  security authorizationdb write system.preferences < /tmp/system.preferences.plist 2>> "$logFile"
+	  rm /tmp/system.preferences.plist
 }
 
 function unlock_prefs {
 	  echo "$logStart Unlocking system-wide preferences from non-admin users" >> "$logFile"
-	  sudo security authorizationdb read system.preferences > /tmp/system.preferences.plist 2>> "$logFile"
-	  sudo /usr/libexec/PlistBuddy -c 'Set :shared true' /tmp/system.preferences.plist 2>> "$logFile"
-	  sudo security authorizationdb write system.preferences < /tmp/system.preferences.plist 2>> "$logFile"
-	  sudo rm /tmp/system.preferences.plist
+	  security authorizationdb read system.preferences > /tmp/system.preferences.plist 2>> "$logFile"
+	  /usr/libexec/PlistBuddy -c 'Set :shared true' /tmp/system.preferences.plist 2>> "$logFile"
+	  security authorizationdb write system.preferences < /tmp/system.preferences.plist 2>> "$logFile"
+	  rm /tmp/system.preferences.plist
 }
 
 # ------------------------------------------------------------------------------
