@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 #                                massmgmt
 #                 launchd-based macOS desired-state management
-#                          Last Edited: 6/1/18
+#                          Last Edited: 6/16/18
 # -----------------------------------------------------------------------------
 # variables
 configFile="/usr/local/massmgmt/massmgmt.config"
@@ -115,7 +115,7 @@ function flushLog {
 function pullLog {
     currentUser="$(id -un)"
     echo "Pulling log"
-    sudo cp "$logFile" "/Users/$currentUser/Desktop/"
+    cp "$logFile" "/Users/$currentUser/Desktop/"
     if [ -e "/Users/$currentUser/Desktop/massmgmt.log" ] ; then
     	open "/Users/$currentUser/Desktop"
 	open "/Users/$currentUser/Desktop/massmgmt.log"
@@ -127,7 +127,7 @@ function pullLog {
 
 function rmProfiles {
     echo "Removing all configuration profiles installed on this computer."
-    sudo profiles -D
+    profiles -D
 }
 
 function installProfiles {
@@ -141,7 +141,7 @@ function installProfiles {
         ls -l | awk '/-rw/ {print $(9) }' >> "$profLoc/profiles.txt"
         cat "$profLoc/profiles.txt" | while read line
         do
-            sudo profiles -I "$profLoc/$line"
+            profiles -I "$profLoc/$line"
             echo "Profiles installed."
         done
     else
