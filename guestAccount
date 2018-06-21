@@ -1,0 +1,70 @@
+#!/bin/bash
+# guestAccount
+# disable the macOS guest account
+# the guest account often enables itself without user intervention so this
+#+script can automatically correct that if the guest account is not desired
+# Last Edited: 6/21/18
+
+### VARIABLES
+source /usr/local/massmgmt/lib/massmgmtlib.sh
+guest="$(cat $configFile | awk '/GuestAccount/ {print $2}')"
+enabled="$(defaults read /Library/Preferences/com.apple.loginwindow GuestEnabled)"
+
+### FUNCTIONS
+function disable_guest {
+	if [ -e "/Users/Guest" ] ; then
+		echo "$logStart Deleting and Disabling the Guest User Account" >> "$logFile"
+		dscl . -delete /Users/Guest
+		# write to the login window plist to disable Guest
+		defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool NO
+		# write to the file server plists to prevent login
+		defaults write /Library/Preferences/com.apple.AppleFileServer guestAccess -bool NO
+		defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server AllowGuestAccess -bool NO
+		echo "$logStart Guest User Account Disabled" >> "$logFile"
+	fi
+}
+
+function enable_guest {
+	echo "$logStart Creating and Enabling the Guest User Account" >> "$logFile"
+	dscl . -create /Users/Guest
+	defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool YES
+	defaults write /Library/Preferences/com.apple.AppleFileServer guestAccess -bool YES
+	defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server AllowGuestAccess -bool YES
+	echo "$logStart Guest User Account Enabled" >> "$logFile"
+}
+
+### SCRIPT
+echo "$logStart Checking current status of the Guest User Account" >> "$logFile"
+
+if [ "$enabled" == "1;" ] ; then
+	# guest account is enabled on the host
+	echo "$logStart Guest User Account is currently enabled" >> "$logFile"
+	if [ "$guest" == "Enable" ] ; then
+		echo "$logStart Guest Account is already enabled" >> "$logFile"
+		exit
+	elif [ "$guest" == "Disable" ] ; then
+		echo "$logStart Guest Account is enabled but should be disabled" >> "$logFile"
+		disable_guest
+		exit
+	else
+		echo "$logFile Invalid GuestAccount configuration" >> "$logFile"
+		exit
+	fi
+elif [ "$enabled" == "0;" ] ; then
+	# guest account is disabled on the host
+	echo "$logStart Guest User Account is currently disabled" >> "$logFile"
+	if [ "$guest" == "Enable" ] ; then
+		echo "$logStart Guest Account is currently disabled but should be enabled" >> "$logFile"
+		enable_guest
+		exit
+	elif [ "$guest" == "Disable" ] ; then
+		echo "$logStart Guest Account is already disabled" >> "$logFile"
+		exit
+	else
+		echo "$logFile Invalid GuestAccount configuration" >> "$logFile"
+		exit
+	fi
+else
+	echo "$logStart Could not determine the status of the Guest User Account" >> "$logFile"
+	exit
+fi
