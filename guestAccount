@@ -25,12 +25,33 @@ function disable_guest {
 }
 
 function enable_guest {
-	echo "$logStart Creating and Enabling the Guest User Account" >> "$logFile"
+	echo "$logStart Creating and Enabling the Guest User Account"
 	dscl . -create /Users/Guest
 	defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool YES
+	# allow file server access -- make a config option for this
 	defaults write /Library/Preferences/com.apple.AppleFileServer guestAccess -bool YES
 	defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server AllowGuestAccess -bool YES
-	echo "$logStart Guest User Account Enabled" >> "$logFile"
+	
+	dscl . -create /Users/Guest dsAttrTypeNative:_defaultLanguage en
+	dscl . -create /Users/Guest dsAttrTypeNative:_guest true
+	dscl . -create /Users/Guest dsAttrTypeNative:_writers__defaultLanguage Guest
+	dscl . -create /Users/Guest dsAttrTypeNative:_writers__LinkedIdentity Guest
+	dscl . -create /Users/Guest dsAttrTypeNative:_writers__UserCertificate Guest
+	dscl . -create /Users/Guest AuthenticationHint ''
+	dscl . -create /Users/Guest NFSHomeDirectory /Users/Guest
+	sleep 2
+	dscl . -passwd /Users/Guest ''
+	sleep 2
+	
+	dscl . -create /Users/Guest Picture "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/UserIcon.icns"
+	dscl . -create /Users/Guest PrimaryGroupID 201
+	dscl . -create /Users/Guest RealName "Guest User"
+	dscl . -create /Users/Guest RecordName Guest
+	dscl . -create /Users/Guest UniqueID 201
+	dscl . -create /Users/Guest UserShell /bin/bash
+	#security add-generic-password -a Guest -s com.apple.loginwindow.guest-account -D "application password" /Library/Keychains/System.keychain
+	
+	echo "$logStart Guest User Account Enabled"
 }
 
 ### SCRIPT
