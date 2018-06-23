@@ -11,6 +11,7 @@
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 guest="$(cat $configFile | awk '/GuestAccount/ {print $2}')"
 enabled="$(defaults read /Library/Preferences/com.apple.loginwindow GuestEnabled)"
+guestPassword="$(cat $configFile | awk '/GuestPassword/ {print $2}')"
 
 ### FUNCTIONS
 function disable_guest {
@@ -42,7 +43,7 @@ function enable_guest {
 	dscl . -create /Users/Guest AuthenticationHint ''
 	dscl . -create /Users/Guest NFSHomeDirectory /Users/Guest
 	sleep 2
-	dscl . -passwd /Users/Guest ''
+	dscl . -passwd /Users/Guest "$guestPassword"
 	sleep 2
 	
 	dscl . -create /Users/Guest Picture "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/UserIcon.icns"
