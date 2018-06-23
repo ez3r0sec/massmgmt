@@ -34,9 +34,6 @@ function disable_guest {
 		dscl . -delete /Users/Guest
 		# write to the login window plist to disable Guest
 		defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool NO
-		# write to the file server plists to prevent login
-		defaults write /Library/Preferences/com.apple.AppleFileServer guestAccess -bool NO
-		defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server AllowGuestAccess -bool NO
 		echo "$logStart Guest User Account Disabled" >> "$logFile"
 	fi
 }
