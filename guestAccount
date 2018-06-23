@@ -3,6 +3,8 @@
 # disable the macOS guest account
 # the guest account often enables itself without user intervention so this
 #+script can automatically correct that if the guest account is not desired
+# based on https://github.com/sheagcraig/guestAccount/blob/master/guest_account
+#+by Shea Craig
 # Last Edited: 6/22/18
 
 ### VARIABLES
