@@ -12,8 +12,21 @@ source /usr/local/massmgmt/lib/massmgmtlib.sh
 guest="$(cat $configFile | awk '/GuestAccount/ {print $2}')"
 enabled="$(defaults read /Library/Preferences/com.apple.loginwindow GuestEnabled)"
 guestPassword="$(cat $configFile | awk '/GuestPassword/ {print $2}')"
+fileServerAccess="$(cat $configFile | awk '/GuestFileServerAccess/ {print $2}')"
 
 ### FUNCTIONS
+function server_access {
+	# allow or deny file server access
+	if [ "$fileServerAccess" == "Allow" ] ; then
+		defaults write /Library/Preferences/com.apple.AppleFileServer guestAccess -bool YES
+		defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server AllowGuestAccess -bool YES
+	elif [ "$fileServerAccess" == "Deny" ] ; then
+		defaults write /Library/Preferences/com.apple.AppleFileServer guestAccess -bool NO
+		defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server AllowGuestAccess -bool NO
+	else
+		echo "$logStart Guest File Server Access Not Specified" >> "$logFile"
+}
+
 function disable_guest {
 	if [ -e "/Users/Guest" ] ; then
 		echo "$logStart Deleting and Disabling the Guest User Account" >> "$logFile"
@@ -31,9 +44,6 @@ function enable_guest {
 	echo "$logStart Creating and Enabling the Guest User Account"
 	dscl . -create /Users/Guest
 	defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool YES
-	# allow file server access -- make a config option for this
-	defaults write /Library/Preferences/com.apple.AppleFileServer guestAccess -bool YES
-	defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server AllowGuestAccess -bool YES
 	
 	dscl . -create /Users/Guest dsAttrTypeNative:_defaultLanguage en
 	dscl . -create /Users/Guest dsAttrTypeNative:_guest true
@@ -69,6 +79,7 @@ if [ "$enabled" == "1" ] ; then
 	elif [ "$guest" == "Disable" ] ; then
 		echo "$logStart Guest Account is enabled but should be disabled" >> "$logFile"
 		disable_guest
+		server_access
 		exit
 	else
 		echo "$logFile Invalid GuestAccount configuration" >> "$logFile"
@@ -80,6 +91,7 @@ elif [ "$enabled" == "0" ] ; then
 	if [ "$guest" == "Enable" ] ; then
 		echo "$logStart Guest Account is currently disabled but should be enabled" >> "$logFile"
 		enable_guest
+		server_access
 		exit
 	elif [ "$guest" == "Disable" ] ; then
 		echo "$logStart Guest Account is already disabled" >> "$logFile"
