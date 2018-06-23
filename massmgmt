@@ -2,7 +2,7 @@
 # -----------------------------------------------------------------------------
 #                                massmgmt
 #                 launchd-based macOS desired-state management
-#                          Last Edited: 6/16/18
+#                          Last Edited: 6/23/18
 # -----------------------------------------------------------------------------
 # variables
 configFile="/usr/local/massmgmt/massmgmt.config"
@@ -34,6 +34,7 @@ function massmgmtRun {
     $binLoc/enableARD
     $binLoc/enableSSH
     $binLoc/firefox
+    $binLoc/guestAccount
     $binLoc/lockSysPrefs
     $binLoc/munki
     $binLoc/powerOptions
@@ -70,6 +71,9 @@ function interactiveMode {
     elif [ "$A" == "firefox" ] ; then
   	echo "$logStart -- Running firefox interactively" | tee "$logFile"
     	$binLoc/firefox
+    elif [ "$A" == "guestAccount" ] ; then
+  	echo "$logStart -- Running guestAccount interactively" | tee "$logFile"
+    	$binLoc/guestAccount
     elif [ "$A" == "munki" ] ; then
   	echo "$logStart -- Running munki interactively" | tee "$logFile"
     	$binLoc/munki
