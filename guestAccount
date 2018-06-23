@@ -3,7 +3,7 @@
 # disable the macOS guest account
 # the guest account often enables itself without user intervention so this
 #+script can automatically correct that if the guest account is not desired
-# Last Edited: 6/21/18
+# Last Edited: 6/22/18
 
 ### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
@@ -36,7 +36,7 @@ function enable_guest {
 ### SCRIPT
 echo "$logStart Checking current status of the Guest User Account" >> "$logFile"
 
-if [ "$enabled" == "1;" ] ; then
+if [ "$enabled" == "1" ] ; then
 	# guest account is enabled on the host
 	echo "$logStart Guest User Account is currently enabled" >> "$logFile"
 	if [ "$guest" == "Enable" ] ; then
@@ -50,7 +50,7 @@ if [ "$enabled" == "1;" ] ; then
 		echo "$logFile Invalid GuestAccount configuration" >> "$logFile"
 		exit
 	fi
-elif [ "$enabled" == "0;" ] ; then
+elif [ "$enabled" == "0" ] ; then
 	# guest account is disabled on the host
 	echo "$logStart Guest User Account is currently disabled" >> "$logFile"
 	if [ "$guest" == "Enable" ] ; then
