@@ -5,7 +5,7 @@
 #+script can automatically correct that if the guest account is not desired
 # based on https://github.com/sheagcraig/guestAccount/blob/master/guest_account
 #+by Shea Craig
-# Last Edited: 6/22/18
+# Last Edited: 6/23/18
 
 ### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
@@ -25,6 +25,7 @@ function server_access {
 		defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server AllowGuestAccess -bool NO
 	else
 		echo "$logStart Guest File Server Access Not Specified" >> "$logFile"
+	fi
 }
 
 function disable_guest {
