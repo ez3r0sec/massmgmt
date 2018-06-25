@@ -1,10 +1,9 @@
 #!/bin/bash
-# -----------------------------------------------------------------------------
-#                                massmgmt
-#                 launchd-based macOS desired-state management
-#                          Last Edited: 6/23/18
-# -----------------------------------------------------------------------------
-# variables
+# massmgmt
+# launchd-based macOS desired-state management
+# Last Edited: 6/25/18
+
+### VARIABLES
 configFile="/usr/local/massmgmt/massmgmt.config"
 
 # define admin user
@@ -24,8 +23,7 @@ binLoc="$(cat $configFile | awk '/ScriptLocation/ {print $2}')"
 # define directory for configuration profiles
 profLoc="$(cat $configFile | awk '/MobileConfigLocation/ {print $2}')"
 
-# -----------------------------------------------------------------------------
-# functions
+### FUNCTIONS
 function massmgmtRun {
     $binLoc/autoUpdate
     $binLoc/adobeReader
@@ -153,7 +151,7 @@ function installProfiles {
     fi
 }
 
-# -----------------------------------------------------------------------------
+### SCRIPT
 # options that can be called using: $ massmgmt <option>
 
 if [ "$1" == "flushLog" ] ; then
@@ -174,4 +172,3 @@ else
     massmgmtRun
 fi
 exit
-# -----------------------------------------------------------------------------
