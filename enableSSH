@@ -1,14 +1,15 @@
 #!/bin/bash
-# -----------------------------------------------------------------------------
 # enableSSH (UNIX exec.)
 # enables ssh for $adminUser
-# Last Edited: 6/16/18
-# -----------------------------------------------------------------------------
+# Last Edited: 6/25/18
+
+### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
 sshCheck="$(systemsetup getremotelogin | awk '/Remote/ {print $(3) }')"
 scriptEnabled="$(cat $configFile | awk '/EnableSSH/ {print $2}')"
-# -----------------------------------------------------------------------------
+
+### SCRIPT
 # check if the script is enabled in the config file
 if [ "$scriptEnabled" == "Disable" ] ; then
 	echo "$logStart enableSSH is disabled in the configuration file" >> "$logFile"
@@ -45,4 +46,3 @@ else
 	echo "$logStart Invalid enableSSH configuration" >> "$logFile"
 fi
 exit
-# -----------------------------------------------------------------------------
