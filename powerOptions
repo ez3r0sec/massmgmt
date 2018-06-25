@@ -1,13 +1,14 @@
 #!/bin/bash
-# -----------------------------------------------------------------------------
 # powerOptions (UNIX exec.)
 # set scheduled reboots and other power settings on macOS
-# Last Edited: 6/16/18
-# -----------------------------------------------------------------------------
+# Last Edited: 6/25/18
+
+### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
 scriptEnabled="$(cat $configFile | awk '/PowerOptions/ {print $2}')"
-# -----------------------------------------------------------------------------
+
+### SCRIPT
 if [ "$scriptEnabled" == "Disable" ] ; then
     echo "$logStart powerOptions disabled" >> "$logFile"
     exit
@@ -76,4 +77,4 @@ else
     echo "$logStart Invalid powerOptions configuration" >> "$logFile"
 fi
 exit
-# -----------------------------------------------------------------------------
+
