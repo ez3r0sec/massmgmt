@@ -1,15 +1,16 @@
 #!/bin/bash
-# -----------------------------------------------------------------------------
 # setTimezone (UNIX exec.)
 # set timezone
-# Last Edited: 6/16/18
-# -----------------------------------------------------------------------------
+# Last Edited: 6/25/18
+
+### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
 scriptEnabled="$(cat $configFile | awk '/SetTimezone/ {print $2}')"
 timeZone="$(cat $configFile | awk '/TimeZone/ {print $2}')"
 currentTimeZone="$(systemsetup -gettimezone | awk '/Time Zone/ {print $(3) }')"
-# -----------------------------------------------------------------------------
+
+### SCRIPT
 if [ "$scriptEnabled" == "Disable" ] ; then
     echo "$logStart setTimezone disabled" >> "$logFile"
     exit
@@ -27,4 +28,3 @@ else
     echo "$logStart Invalid configuration for setTimezone" >> "$logFile"
 fi
 exit
-# ----------------------------------------------------------------------------
