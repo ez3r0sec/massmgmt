@@ -54,4 +54,3 @@ else
     echo "$logStart Invalid Chrome configuration" >> "$logFile"
 fi
 exit
-# -----------------------------------------------------------------------------
