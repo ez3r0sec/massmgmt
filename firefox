@@ -1,15 +1,16 @@
 #!/bin/sh
-# ------------------------------------------------------------------------------
 # Script to download or update Firefox
 # https://www.jamf.com/jamf-nation/third-party-products/files/764/firefox-install-update
-# Last Modified: 6/16/18
-# ------------------------------------------------------------------------------
+# Last Edited: 6/25/18
+
+### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
 dmgfile="FF.dmg"
 scriptEnabled="$(cat $configFile | awk '/UpdateFirefox/ {print $2}')"
 deleteIfInstalled="$(cat $configFile | awk '/Firefox-DeleteIfInstalled/ {print $2}')"
-# ------------------------------------------------------------------------------
+
+### SCRIPT
 if [ "$scriptEnabled" == "Disable" ] ; then
     if [ "$deleteIfInstalled" == "Yes" ] ; then
 	echo "$logStart Deleting Firefox" >> "$logFile"
@@ -77,4 +78,3 @@ elif [ "$scriptEnabled" == "Enable" ] ; then
 else
     echo "$logStart Invalid Firefox configuration" >> "$logFile"
 fi
-# ------------------------------------------------------------------------------
