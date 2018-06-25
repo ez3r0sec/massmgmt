@@ -123,4 +123,3 @@ fi
 
 echo "$logStart All parameters set, exiting" >> "$logFile"
 exit
-# -----------------------------------------------------------------------------
