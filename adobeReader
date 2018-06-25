@@ -1,15 +1,15 @@
 #!/bin/sh
-# ------------------------------------------------------------------------------
 # adobeReader (UNIX. Exec.)
 # Script to download and install Adobe Reader DC
 # modified from: https://www.jamf.com/jamf-nation/third-party-products/files/761/
 # adobe-reader-installer-updater
-# Last Edited: 6/16/18
-# ------------------------------------------------------------------------------
+# Last Edited: 6/25/18
+
+### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 scriptEnabled="$(cat $configFile | awk '/AdobeReader/ {print $2}')"
-# ------------------------------------------------------------------------------
-# functions
+
+### FUNCTIONS
 function check_enabled {
 	if [ "$scriptEnabled" == "Enable" ] ; then
 		echo "$logStart adobeReader is enabled, comparing versions" >> "$logFile"
@@ -71,7 +71,7 @@ function update_reader {
 		echo "$logStart Adobe Reader is already up to date." >> "$logFile"
 	fi
 }
-# ------------------------------------------------------------------------------
+
+### SCRIPT
 check_enabled
 exit
-# ------------------------------------------------------------------------------
