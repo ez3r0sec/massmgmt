@@ -1,20 +1,19 @@
 #!/usr/bin/python
-# ------------------------------------------------------------------------------
-# checkChrome.py (Python 2.7)
+# checkChrome (Python 2.7)
 # Check if chrome is installed/up to date and install if not installed or out of date
-# Last Edited: 6/1/18
-# ------------------------------------------------------------------------------
-# import libraries
+# Last Edited: 6/25/18
+
+### IMPORTS
 import json
 import urllib2
 import os.path
 import plistlib
 
-# variables --------------------------------------------------------------------
+### VARIABLES
 url = 'http://omahaproxy.appspot.com/all.json'
 osPath = "/Applications/Google Chrome.app"
 
-# ------------------------------------------------------------------------------
+### SCRIPT
 if os.path.exists(osPath) is True:
     resp = urllib2.urlopen(url)
     data = json.loads(resp.read())
@@ -39,4 +38,3 @@ else:
     file.write("Please update chrome") 
     exit
 exit
-#-------------------------------------------------------------------------------
