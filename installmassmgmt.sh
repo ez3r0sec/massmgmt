@@ -1,9 +1,7 @@
 #!/bin/bash
-# -----------------------------------------------------------------------------
 # installmassmgmt.sh
 # install the components of the massmgmt suite in the correct locations
-# Last Edited: 6/23/18
-# -----------------------------------------------------------------------------
+# Last Edited: 6/25/18
 
 # remove previous installation
 if [ -e "/usr/local/massmgmt" ] ; then
@@ -86,4 +84,3 @@ if [ -e "/usr/local/massmgmt/massmgmt.config" ] ; then
 else
     exit 1
 fi
-# -----------------------------------------------------------------------------
