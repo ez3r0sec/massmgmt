@@ -1,9 +1,9 @@
 #!/bin/bash
-# -----------------------------------------------------------------------------
 # chrome (UNIX exec.)
 # update/install Google Chrome
-# Last Edited: 6/16/18
-# -----------------------------------------------------------------------------
+# Last Edited: 6/25/18
+
+### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
 dmgfile="googlechrome.dmg"
@@ -12,7 +12,8 @@ url='https://dl.google.com/chrome/mac/stable/GGRO/googlechrome.dmg'
 scriptEnabled="$(cat $configFile | awk '/UpdateChrome/ {print $2}')"
 deleteIfInstalled="$(cat $configFile | awk '/DeleteIfInstalled/ {print $2}')"
 incognitoMode="$(cat $configFile | awk '/IncognitoMode/ {print $2}')"
-# -----------------------------------------------------------------------------
+
+### SCRIPT
 # check if the script is enabled in the config file
 if [ "$scriptEnabled" == "Disable" ] ; then
     if [ "$deleteIfInstalled" == "Yes" ] ; then
