@@ -1,10 +1,9 @@
 #!/bin/bash
-# -----------------------------------------------------------------------------
-#                                massmgmt
-#                 launchd-based macOS desired-state management
-#                          Last Edited: 6/16/18
-# -----------------------------------------------------------------------------
-# variables
+# massmgmt
+# launchd-based macOS desired-state management
+# Last Edited: 6/25/18
+
+### VARIABLES
 configFile="/usr/local/massmgmt/massmgmt.config"
 
 # define admin user
@@ -24,8 +23,7 @@ binLoc="$(cat $configFile | awk '/ScriptLocation/ {print $2}')"
 # define directory for configuration profiles
 profLoc="$(cat $configFile | awk '/MobileConfigLocation/ {print $2}')"
 
-# -----------------------------------------------------------------------------
-# functions
+### FUNCTIONS
 function massmgmtRun {
     $binLoc/autoUpdate
     $binLoc/adobeReader
@@ -34,6 +32,7 @@ function massmgmtRun {
     $binLoc/enableARD
     $binLoc/enableSSH
     $binLoc/firefox
+    $binLoc/guestAccount
     $binLoc/lockSysPrefs
     $binLoc/munki
     $binLoc/powerOptions
@@ -70,6 +69,9 @@ function interactiveMode {
     elif [ "$A" == "firefox" ] ; then
   	echo "$logStart -- Running firefox interactively" | tee "$logFile"
     	$binLoc/firefox
+    elif [ "$A" == "guestAccount" ] ; then
+  	echo "$logStart -- Running guestAccount interactively" | tee "$logFile"
+    	$binLoc/guestAccount
     elif [ "$A" == "munki" ] ; then
   	echo "$logStart -- Running munki interactively" | tee "$logFile"
     	$binLoc/munki
@@ -149,9 +151,15 @@ function installProfiles {
     fi
 }
 
-# -----------------------------------------------------------------------------
-# options that can be called using: $ massmgmt <option>
+### SCRIPT
+# check if we are running with root privs
+if [ "$(whoami)" != "root" ] ; then
+    echo "$logStart Attempt to run as non-root -> $(whoami)" >> "$logFile"
+    exit
+fi
 
+# check arguments
+# options that can be called using: $ massmgmt <option>
 if [ "$1" == "flushLog" ] ; then
     flushLog
 elif [ "$1" == "pullLog" ] ; then
@@ -170,4 +178,3 @@ else
     massmgmtRun
 fi
 exit
-# -----------------------------------------------------------------------------

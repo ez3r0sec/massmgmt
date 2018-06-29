@@ -1,16 +1,17 @@
 #!/bin/sh
-# -----------------------------------------------------------------------------
 # enableARD (UNIX exec.)
 # enableARD arg
-# Last Edited: 6/16/18
-# -----------------------------------------------------------------------------
+# Last Edited: 6/25/18
+
+### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
 lineTemplate="com.apple.RemoteDesktop.agent"
 ARD="$(launchctl list | grep '^\d.*RemoteDesktop.*')"
 Agent="$(echo $ARD | awk '/com.apple.RemoteDesktop.agent/ {print $(NF) }')"
 scriptEnabled="$(cat $configFile | awk '/EnableARD/ {print $2}')"
-# -----------------------------------------------------------------------------
+
+### SCRIPT
 # check if the script is enabled in the config file
 if [ "$scriptEnabled" == "Disable" ] ; then
     if [ "$Agent" == "$lineTemplate" ] ; then
@@ -36,4 +37,4 @@ else
     echo "$logStart Invalid enableARD configuration" >> "$logFile"
 fi
 exit
-# -----------------------------------------------------------------------------
+

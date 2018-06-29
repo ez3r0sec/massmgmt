@@ -1,15 +1,16 @@
 #!/bin/bash
-# -----------------------------------------------------------------------------
 # munki (UNIX exec.)
 # configure munki (if desired)
 # Last Edited: 6/16/18
-# -----------------------------------------------------------------------------
+
+### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
 scriptEnabled="$(cat $configFile | awk '/Munki/ {print $2}')"
 munkiURL="$(cat $configFile | awk '/MunkiURL/ {print $2}')"
 munkiClient="$(cat $configFile | awk '/MunkiClient/ {print $2}')"
-# -----------------------------------------------------------------------------
+
+### SCRIPT
 if [ "$scriptEnabled" == "Disable" ] ; then
     echo "$logStart Munki configuration is disabled" >> "$logFile"
     exit
@@ -23,4 +24,3 @@ else
     echo "$logStart Munki configuration invalid" >> "$logFile"
 fi
 exit
-# -----------------------------------------------------------------------------

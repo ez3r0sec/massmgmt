@@ -1,12 +1,11 @@
 #!/bin/bash
-# -----------------------------------------------------------------------------
 # autoUpdateCheck (UNIX Exec.)
 # Check to see if auto updates are set to the desired value
-# Last Edited: 6/16/18
-# -----------------------------------------------------------------------------
+# Last Edited: 6/25/18
+
+### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 
-# -----------------------------------------------------------------------------
 # check curent settings
 autoCheckEnabled="$(defaults read /Library/Preferences/com.apple.SoftwareUpdate | awk '/AutomaticCheckEnabled = / {print $3}')"
 commerceAutoUpdate="$(defaults read /Library/Preferences/com.apple.commerce | awk '/AutoUpdate = / {print $3}')"
@@ -57,9 +56,8 @@ if [ "$systemFiles" == "Enable" ] ; then
 else
 	systemFiles="0;"
 fi
-# -----------------------------------------------------------------------------
-# set parameters
-# -----------------------------------------------------------------------------
+
+##### set parameters
 # parameter that specifies scheduled checking for updates
 if [ "$autoCheck" == "$autoCheckEnabled" ] ; then
 	echo "$logStart Desired state in place for automatic checking for updates" >> "$logFile"
@@ -125,4 +123,3 @@ fi
 
 echo "$logStart All parameters set, exiting" >> "$logFile"
 exit
-# -----------------------------------------------------------------------------

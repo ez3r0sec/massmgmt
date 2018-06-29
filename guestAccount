@@ -1,0 +1,102 @@
+#!/bin/bash
+# guestAccount
+# disable the macOS guest account
+# based on hxxps://github[.]com/sheagcraig/guestAccount/blob/master/guest_account by Shea Craig
+# Last Edited: 6/26/18
+
+### VARIABLES
+source /usr/local/massmgmt/lib/massmgmtlib.sh
+guest="$(cat $configFile | awk '/GuestAccount/ {print $2}')"
+enabled="$(defaults read /Library/Preferences/com.apple.loginwindow GuestEnabled)"
+guestPassword="$(cat $configFile | awk '/GuestPassword/ {print $2}')"
+fileServerAccess="$(cat $configFile | awk '/GuestFileServerAccess/ {print $2}')"
+
+### FUNCTIONS
+function server_access {
+	# allow or deny file server access
+	if [ "$fileServerAccess" == "Allow" ] ; then
+		defaults write /Library/Preferences/com.apple.AppleFileServer guestAccess -bool YES
+		defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server AllowGuestAccess -bool YES
+	elif [ "$fileServerAccess" == "Deny" ] ; then
+		defaults write /Library/Preferences/com.apple.AppleFileServer guestAccess -bool NO
+		defaults write /Library/Preferences/SystemConfiguration/com.apple.smb.server AllowGuestAccess -bool NO
+	else
+		echo "$logStart Guest File Server Access Not Specified" >> "$logFile"
+	fi
+}
+
+function disable_guest {
+	if [ -e "/Users/Guest" ] ; then
+		echo "$logStart Deleting and Disabling the Guest User Account" >> "$logFile"
+		dscl . -delete /Users/Guest
+		# write to the login window plist to disable Guest
+		defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool NO
+		echo "$logStart Guest User Account Disabled" >> "$logFile"
+	fi
+}
+
+function enable_guest {
+	echo "$logStart Creating and Enabling the Guest User Account"
+	dscl . -create /Users/Guest
+	defaults write /Library/Preferences/com.apple.loginwindow GuestEnabled -bool YES
+	
+	dscl . -create /Users/Guest dsAttrTypeNative:_defaultLanguage en
+	dscl . -create /Users/Guest dsAttrTypeNative:_guest true
+	dscl . -create /Users/Guest dsAttrTypeNative:_writers__defaultLanguage Guest
+	dscl . -create /Users/Guest dsAttrTypeNative:_writers__LinkedIdentity Guest
+	dscl . -create /Users/Guest dsAttrTypeNative:_writers__UserCertificate Guest
+	dscl . -create /Users/Guest AuthenticationHint ''
+	dscl . -create /Users/Guest NFSHomeDirectory /Users/Guest
+	# sometimes it takes a second for everything to get settled
+	sleep 2
+	dscl . -passwd /Users/Guest "$guestPassword"
+	sleep 2
+	
+	dscl . -create /Users/Guest Picture "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/UserIcon.icns"
+	dscl . -create /Users/Guest PrimaryGroupID 201
+	dscl . -create /Users/Guest RealName "Guest User"
+	dscl . -create /Users/Guest RecordName Guest
+	dscl . -create /Users/Guest UniqueID 201
+	dscl . -create /Users/Guest UserShell /bin/bash
+	#security add-generic-password -a Guest -s com.apple.loginwindow.guest-account -D "application password" /Library/Keychains/System.keychain
+	
+	echo "$logStart Guest User Account Enabled"
+}
+
+### SCRIPT
+echo "$logStart Checking current status of the Guest User Account" >> "$logFile"
+
+if [ "$enabled" == "1" ] ; then
+	# guest account is enabled on the host
+	echo "$logStart Guest User Account is currently enabled" >> "$logFile"
+	if [ "$guest" == "Enable" ] ; then
+		echo "$logStart Guest Account is already enabled" >> "$logFile"
+		exit
+	elif [ "$guest" == "Disable" ] ; then
+		echo "$logStart Guest Account is enabled but should be disabled" >> "$logFile"
+		disable_guest
+		server_access
+		exit
+	else
+		echo "$logFile Invalid GuestAccount configuration" >> "$logFile"
+		exit
+	fi
+elif [ "$enabled" == "0" ] ; then
+	# guest account is disabled on the host
+	echo "$logStart Guest User Account is currently disabled" >> "$logFile"
+	if [ "$guest" == "Enable" ] ; then
+		echo "$logStart Guest Account is currently disabled but should be enabled" >> "$logFile"
+		enable_guest
+		server_access
+		exit
+	elif [ "$guest" == "Disable" ] ; then
+		echo "$logStart Guest Account is already disabled" >> "$logFile"
+		exit
+	else
+		echo "$logFile Invalid GuestAccount configuration" >> "$logFile"
+		exit
+	fi
+else
+	echo "$logStart Could not determine the status of the Guest User Account" >> "$logFile"
+	exit
+fi

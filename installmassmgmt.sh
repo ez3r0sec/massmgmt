@@ -1,9 +1,7 @@
 #!/bin/bash
-# -----------------------------------------------------------------------------
 # installmassmgmt.sh
 # install the components of the massmgmt suite in the correct locations
-# Last Edited: 6/16/18
-# -----------------------------------------------------------------------------
+# Last Edited: 6/25/18
 
 # remove previous installation
 if [ -e "/usr/local/massmgmt" ] ; then
@@ -31,6 +29,7 @@ cp adobeReader $copyLoc
 cp checkChrome $copyLoc
 cp chrome $copyLoc
 cp firefox $copyLoc
+cp guestAccount $copyLoc
 cp enableSSH $copyLoc
 cp enableARD $copyLoc
 cp lockSysPrefs $copyLoc
@@ -66,6 +65,7 @@ chmod 755 autoUpdate
 chmod 755 adobeReader
 chmod 755 chrome
 chmod 755 firefox
+chmod 755 guestAccount
 chmod 755 enableSSH
 chmod 755 enableARD
 chmod 755 lockSysPrefs
@@ -84,4 +84,3 @@ if [ -e "/usr/local/massmgmt/massmgmt.config" ] ; then
 else
     exit 1
 fi
-# -----------------------------------------------------------------------------

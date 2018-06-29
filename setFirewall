@@ -1,14 +1,13 @@
 #!/bin/bash
-# -----------------------------------------------------------------------------
 # setFirewall (UNIX Exec.)
 # Control the ALF firewall
-# Last Edited: 6/16/18
-# -----------------------------------------------------------------------------
+# Last Edited: 6/25/18
+
+# VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
 scriptEnabled="$(cat $configFile | awk '/SetFirewall/ {print $2}')"
 
-# -----------------------------------------------------------------------------
-# functions
+### FUNCTIONS
 function check_scriptEnabled {
 	if [ "$check_scriptEnabled" == "Disable" ] ; then
 		echo "$logStart setFirewall disabled" >> "$logFile"
@@ -120,8 +119,8 @@ function turn_on {
 		/usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate on >> "$logFile" 2>&1
 	fi
 }
-# -----------------------------------------------------------------------------
-# script
+
+### SCRIPT
 check_scriptEnabled
 check_on
 check_logging
@@ -129,4 +128,3 @@ check_signed
 check_stealth
 turn_on
 exit
-# -----------------------------------------------------------------------------
