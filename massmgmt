@@ -152,8 +152,14 @@ function installProfiles {
 }
 
 ### SCRIPT
-# options that can be called using: $ massmgmt <option>
+# check if we are running with root privs
+if [ "$(whoami)" != "root" ] ; then
+    echo "$logStart Attempt to run as non-root -> $(whoami)" >> "$logFile"
+    exit
+fi
 
+# check arguments
+# options that can be called using: $ massmgmt <option>
 if [ "$1" == "flushLog" ] ; then
     flushLog
 elif [ "$1" == "pullLog" ] ; then
