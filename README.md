@@ -1,6 +1,6 @@
 # massmgmt
-Version 2.0.1                                                           
-Last Edited: 6/1/18                                                                                            
+Version 2.1.0                                                           
+Last Edited: 6/29/18                                                                                            
 
 # Purpose
 The massmgmt suite came about as an attempt to automate configuration and patch management
@@ -37,7 +37,8 @@ The massmgmt tool has logging built into the scripts that are included. The
 log file is located by default at /usr/local/massmgmt/massmgmt.log. The log may 
 also be flushed by entering the command:
 
-> massmgmt flushLog
+'''shell
+massmgmt flushLog
 
 Logs may also be retrieved to the desktop directory of the current user with:
 
