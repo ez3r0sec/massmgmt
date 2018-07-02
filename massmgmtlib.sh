@@ -1,7 +1,7 @@
 #!/bin/bash
 # massmgmtlib.sh
 # bash library for massmgmt
-# Last Edited: 6/25/18
+# Last Edited: 7/2/18
 
 ### VARIABLES
 # files
@@ -13,7 +13,7 @@ adminUserID="$(cat $configFile | awk '/AdminUserID/ {print $2}')"
 adminUser="$(dscl . list /Users UniqueID | grep $adminUserID | awk '{print $1}')"
 
 # system information
-starDate="$(date)"
+starDate="$(date +20%y-%m-%d_%H:%M:%S)"
 hostName="$(hostname)"
 
 # log entry
