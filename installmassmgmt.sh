@@ -1,7 +1,8 @@
 #!/bin/bash
 # installmassmgmt.sh
 # install the components of the massmgmt suite in the correct locations
-# Last Edited: 6/25/18
+# use as a postinstall script when packaging in .pkg format
+# Last Edited: 8/21/18
 
 # remove previous installation
 if [ -e "/usr/local/massmgmt" ] ; then
