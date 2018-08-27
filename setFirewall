@@ -1,7 +1,7 @@
 #!/bin/bash
 # setFirewall (UNIX Exec.)
 # Control the ALF firewall
-# Last Edited: 6/25/18
+# Last Edited: 8/27/18
 
 # VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
@@ -22,7 +22,7 @@ function check_on {
 	if [ "$globalState" == "1" ] ; then
 		echo "$logStart Firewall is already on" >> "$logFile"
 		echo "$logStart Turning off ALF to make changes" >> "$logFile"
-		sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off >> "$logFile" 2>&1
+		/usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off >> "$logFile" 2>&1
 	else
 		echo "$logStart Firewall is off" >> "$logFile"
 	fi
