@@ -72,7 +72,7 @@ adminUser="$(cat $configFile | awk '/AdminUserID/ {print $2}')"
 chown -R $adminUser /usr/local/massmgmt
 
 # chmod
-chmod 755 /usr/local/massmgmt
+chmod 755 /usr/local/massmgmt/massmgmt
 cd /usr/local/massmgmt/bin
 chmod 755 autoUpdate
 chmod 755 adobeReader
