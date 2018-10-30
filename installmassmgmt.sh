@@ -2,7 +2,16 @@
 # installmassmgmt.sh
 # install the components of the massmgmt suite in the correct locations
 # use as a postinstall script when packaging in .pkg format
-# Last Edited: 8/21/18
+# Last Edited: 10/30/18
+
+userName="$(whoami)"
+
+### FUNCTIONS
+# check if we have the appropriate privileges
+if [ "$userName" != "root" ] ; then
+	echo "$0 must be run using sudo"
+	exit
+fi
 
 # remove previous installation
 if [ -e "/usr/local/massmgmt" ] ; then
