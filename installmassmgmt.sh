@@ -6,7 +6,6 @@
 
 userName="$(whoami)"
 
-### FUNCTIONS
 # check if we have the appropriate privileges
 if [ "$userName" != "root" ] ; then
 	echo "$0 must be run using sudo"
