@@ -1,6 +1,6 @@
 # massmgmt
-Version 2.1.0                                                           
-Last Edited: 6/29/18                                                                                            
+Version 2.1.4                                                           
+Last Edited: 10/30/18                                                                                            
 
 # Purpose
 The massmgmt suite came about as an attempt to automate configuration and patch management
