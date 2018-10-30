@@ -3,7 +3,7 @@
 # Script to download and install Adobe Reader DC
 # modified from: https://www.jamf.com/jamf-nation/third-party-products/files/761/
 # adobe-reader-installer-updater
-# Last Edited: 6/25/18
+# Last Edited: 10/30/18
 
 ### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
@@ -30,7 +30,7 @@ function update_reader {
 	do
 		latestver="$(curl -s -L -A "$userAgent" https://get.adobe.com/reader/ | grep "<strong>Version" | sed -e 's/<[^>][^>]*>//g' | awk '{print $2}')"
 	done
-	echo "Latest Version is: $latestver" >> "$logFile"
+	echo "$logStart Latest Version is: $latestver" >> "$logFile"
 	latestvernorm="$(echo ${latestver} | sed -e 's/20//')"
 	# Get the version number of the currently-installed Adobe Reader, if any.
 	if [ -e "/Applications/Adobe Acrobat Reader DC.app" ]; then
