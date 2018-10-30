@@ -1,7 +1,7 @@
 #!/bin/sh
 # Script to download or update Firefox
 # https://www.jamf.com/jamf-nation/third-party-products/files/764/firefox-install-update
-# Last Edited: 6/25/18
+# Last Edited: 10/30/18
 
 ### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
@@ -38,7 +38,7 @@ elif [ "$scriptEnabled" == "Enable" ] ; then
   # Get the version number of the currently-installed FF, if any.
     if [ -e "/Applications/Firefox.app" ] ; then
         currentinstalledver="$(/usr/bin/defaults read /Applications/Firefox.app/Contents/Info CFBundleShortVersionString)"
-    	echo "Current installed version is: $currentinstalledver" >> "$logFile"
+    	echo "$logStart Current installed version is: $currentinstalledver" >> "$logFile"
     	if [ ${latestver} = ${currentinstalledver} ] ; then
             echo "$logStart Firefox is current. Exiting" >> "$logFile"
             exit
