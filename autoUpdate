@@ -1,7 +1,7 @@
 #!/bin/bash
 # autoUpdateCheck (UNIX Exec.)
 # Check to see if auto updates are set to the desired value
-# Last Edited: 6/25/18
+# Last Edited: 10/30/18
 
 ### VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
@@ -90,7 +90,7 @@ else
         	echo "$logStart Setting automatic macOS updates --> On" >> "$logFile"
     		defaults write /Library/Preferences/com.apple.commerce AutoUpdateRestartRequired -bool TRUE
     	else
-    		echo "Setting automatic macOS updates --> Off" >> "$logFile"
+    		echo "$logStart Setting automatic macOS updates --> Off" >> "$logFile"
     		defaults write /Library/Preferences/com.apple.commerce AutoUpdateRestartRequired -bool FALSE
     	fi
 fi
