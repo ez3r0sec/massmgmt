@@ -57,7 +57,11 @@ cp massmgmtlib.sh /usr/local/massmgmt/lib
 
 cp org.massmgmt.plist /Library/LaunchDaemons
 
-mkdir /usr/local/bin
+if [ -d /usr/local/bin ] ; then
+	echo "/usr/local/bin exists!"
+else
+	mkdir /usr/local/bin
+fi
 
 ln -s '/usr/local/massmgmt/massmgmt' '/usr/local/bin/'
 
