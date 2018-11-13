@@ -2,7 +2,7 @@
 # installmassmgmt.sh
 # install the components of the massmgmt suite in the correct locations
 # use as a postinstall script when packaging in .pkg format
-# Last Edited: 10/30/18
+# Last Edited: 11/13/18
 
 userName="$(whoami)"
 
@@ -69,6 +69,10 @@ ln -s '/usr/local/massmgmt/massmgmt' '/usr/local/bin/'
 configFile="/usr/local/massmgmt/massmgmt.config"
 adminUser="$(cat $configFile | awk '/AdminUserID/ {print $2}')"
 
+# touch the massmgmt.log file so we can chown it
+touch /usr/local/massmgmt/massmgmt.log
+
+# chown the entire directory
 chown -R $adminUser /usr/local/massmgmt
 
 # chmod
