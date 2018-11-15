@@ -1,7 +1,7 @@
 #!/bin/bash
 # setFirewall (UNIX Exec.)
 # Control the ALF firewall
-# Last Edited: 8/27/18
+# Last Edited: 11/15/18
 
 # VARIABLES
 source /usr/local/massmgmt/lib/massmgmtlib.sh
@@ -73,15 +73,15 @@ function check_signed {
 	if [ "$allowSigned2" == "1" ] ; then
 		echo "$logStart Allow signed enabled" >> "$logFile"
 		if [ "$configAllow" == "Enable" ] ; then
-	    		echo "$logStart Allow download signed enabled in config file" >> "$logFile"
+	    		echo "$logStart Allow signed enabled in config file" >> "$logFile"
 	    	else
-	        	echo "$logStart Allow download signed disabled in config file, disabling" >> "$logFile"
+	        	echo "$logStart Allow signed disabled in config file, disabling" >> "$logFile"
 	        	/usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned off >> "$logFile" 2>&1
 	    	fi
 	else
 		echo "$logStart Allow signed disabled" >> "$logFile"
 		if [ "$configAllow" == "Enable" ] ; then
-	    		echo "$logStart Allow download signed enabled in config file, enabling" >> "$logFile"
+	    		echo "$logStart Allow signed enabled in config file, enabling" >> "$logFile"
 	    		/usr/libexec/ApplicationFirewall/socketfilterfw --setallowsigned on >> "$logFile" 2>&1
 	    	else
 	        	echo "$logStart Allow download signed disabled in config file" >> "$logFile"
