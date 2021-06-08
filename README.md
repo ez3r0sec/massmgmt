@@ -37,11 +37,11 @@ The massmgmt tool has logging built into the scripts that are included. The
 log file is located by default at /usr/local/massmgmt/massmgmt.log. The log may 
 also be flushed by entering the command:
 
-`massmgmt flushLog`
+<code>massmgmt flushLog</code>
 
 Logs may also be retrieved to the desktop directory of the current user with:
 
-<code>massmgmt pullLog</code>
+massmgmt pullLog</code>
 
 Massmgmt can also be called so that admins can interactively call individual scripts
 by entering the command:
